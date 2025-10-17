@@ -5,20 +5,22 @@ const ConsentModal = ({ isOpen, onClose, onConsent }) => {
   const [web3Experience, setWeb3Experience] = useState(null);
   const [dataConsent, setDataConsent] = useState(null);
   const [language, setLanguage] = useState('chinese');
+  const [userName, setUserName] = useState('');
 
   const handleSubmit = () => {
-    if (web3Experience !== null && dataConsent !== null) {
+    if (web3Experience !== null && dataConsent !== null && userName.trim()) {
       // 將選擇結果存儲到 localStorage（前端存儲）
       localStorage.setItem('web3Experience', web3Experience);
       localStorage.setItem('dataConsent', dataConsent);
+      localStorage.setItem('userName', userName.trim());
       localStorage.setItem('consentTimestamp', new Date().toISOString());
       
-      onConsent({ web3Experience, dataConsent });
+      onConsent({ web3Experience, dataConsent, userName: userName.trim() });
       onClose();
     }
   };
 
-  const isFormValid = web3Experience !== null && dataConsent !== null;
+  const isFormValid = web3Experience !== null && dataConsent !== null && userName.trim();
 
   return (
     <AnimatePresence>
@@ -120,6 +122,40 @@ const ConsentModal = ({ isOpen, onClose, onConsent }) => {
                       <p className="text-gray-300 leading-relaxed">
                         玩家在遊戲過程中的操作數據將由澳門大學科技學院進行分析與處理，僅用於學術研究及項目優化之目的。本遊戲無需提供任何個人身份資料即可遊玩，因此無需擔心個人資料洩漏問題。
                       </p>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold text-cyan-300 mb-3">
+                        用戶信息
+                      </h3>
+                      <p className="text-gray-300 mb-4">
+                        請輸入您的姓名（可選）：
+                      </p>
+                      <input
+                        type="text"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        placeholder="請輸入您的姓名"
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          borderRadius: '8px',
+                          border: '2px solid #6b7280',
+                          backgroundColor: '#374151',
+                          color: '#ffffff',
+                          fontSize: '16px',
+                          fontFamily: 'inherit',
+                          marginBottom: '16px'
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = '#22d3ee';
+                          e.target.style.boxShadow = '0 0 0 3px rgba(34, 211, 238, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = '#6b7280';
+                          e.target.style.boxShadow = 'none';
+                        }}
+                      />
                     </div>
 
                     <div>
@@ -267,6 +303,40 @@ const ConsentModal = ({ isOpen, onClose, onConsent }) => {
                       <p className="text-gray-300 leading-relaxed">
                         Gameplay data collected during your session will be analyzed and processed by the Faculty of Science and Technology at the University of Macau solely for academic research and project improvement purposes. No personal identifying information is required to play the game, so there is no risk of personal data leakage.
                       </p>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold text-cyan-300 mb-3">
+                        User Information
+                      </h3>
+                      <p className="text-gray-300 mb-4">
+                        Please enter your name (optional):
+                      </p>
+                      <input
+                        type="text"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        placeholder="Enter your name"
+                        style={{
+                          width: '100%',
+                          padding: '12px 16px',
+                          borderRadius: '8px',
+                          border: '2px solid #6b7280',
+                          backgroundColor: '#374151',
+                          color: '#ffffff',
+                          fontSize: '16px',
+                          fontFamily: 'inherit',
+                          marginBottom: '16px'
+                        }}
+                        onFocus={(e) => {
+                          e.target.style.borderColor = '#22d3ee';
+                          e.target.style.boxShadow = '0 0 0 3px rgba(34, 211, 238, 0.1)';
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = '#6b7280';
+                          e.target.style.boxShadow = 'none';
+                        }}
+                      />
                     </div>
 
                     <div>

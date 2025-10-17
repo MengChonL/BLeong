@@ -21,55 +21,80 @@ const GamePage = () => {
   const [showChallenge, setShowChallenge] = useState(false);
   const [selectedItem, setSelectedItem] = useState(0); // 選中的道具索引
   const [selectedChallenge, setSelectedChallenge] = useState(null); // 選中的挑戰索引
+  const [selectedChallengeIndex, setSelectedChallengeIndex] = useState(null); // 選中的挑戰索引
 
   // 道具數據
   const items = [
     {
       id: 1,
       name: '地址複製/對比簿',
+      nameEn: 'Address Copy/Comparison Book',
       description: '顯示目標地址與已知官方地址的逐字符讓用戶對比。遇到疑似地址投毒（如收款地址被篡改）時使用。',
+      descriptionEn: 'Displays target addresses character by character for comparison with known official addresses. Use when encountering suspected address poisoning (such as tampered recipient addresses).',
       rarity: '普通',
+      rarityEn: 'Common',
       type: '防護道具',
+      typeEn: 'Protection Tool',
       image: item1
     },
     {
       id: 2,
       name: '槓桿',
+      nameEn: 'Leverage',
       description: '若本題答對，獎勵 ×2；若答錯，懲罰 ×2（無視慌亂狀態）。對自己判斷極有信心時用於快速積累 Balance。',
+      descriptionEn: 'If answered correctly, reward ×2; if answered incorrectly, penalty ×2 (ignores panic status). Use when extremely confident in your judgment for quick Balance accumulation.',
       rarity: '稀有',
+      rarityEn: 'Rare',
       type: '風險工具',
+      typeEn: 'Risk Tool',
       image: item2
     },
     {
       id: 3,
       name: 'Domain 識別本',
+      nameEn: 'Domain Identification Book',
       description: '一系列正規domain供玩家參考。面對釣魚網站界面時識別真假平台。',
+      descriptionEn: 'A series of legitimate domains for player reference. Identify real vs fake platforms when facing phishing website interfaces.',
       rarity: '稀有',
+      rarityEn: 'Rare',
       type: '識別工具',
+      typeEn: 'Identification Tool',
       image: item3
     },
     {
       id: 4,
       name: '用戶命名本',
+      nameEn: 'User Naming Book',
       description: '展示官方用戶的命名方法。判斷對方是否為真實項目方或偽裝帳號。',
+      descriptionEn: 'Shows official user naming methods. Determine if the other party is a real project team or a disguised account.',
       rarity: '史詩',
+      rarityEn: 'Epic',
       type: '驗證工具',
+      typeEn: 'Verification Tool',
       image: item4
     },
     {
       id: 5,
       name: '語氣分析器',
+      nameEn: 'Tone Analyzer',
       description: '掃描頁面或消息文本，識別誘導性話術（如「緊急領取」「最後機會」等）。遇到可疑空投、客服私信或社群公告時輔助判斷。',
+      descriptionEn: 'Scans page or message text to identify manipulative language (such as "urgent claim", "last chance", etc.). Assist in judgment when encountering suspicious airdrops, customer service messages, or community announcements.',
       rarity: '史詩',
+      rarityEn: 'Epic',
       type: '分析工具',
+      typeEn: 'Analysis Tool',
       image: item5
     },
     {
       id: 6,
       name: '官方公告簿',
+      nameEn: 'Official Announcement Book',
       description: '展示一些正規官方公告供玩家參考（如X/官網/discord）。驗證「合約升級」「緊急授權」等高風險操作的真實性。',
+      descriptionEn: 'Shows legitimate official announcements for player reference (such as X/official website/discord). Verify the authenticity of high-risk operations like "contract upgrades" and "emergency authorizations".',
       rarity: '傳說',
+      rarityEn: 'Legendary',
       type: '參考工具',
+      typeEn: 'Reference Tool',
       image: item6
     }
   ];
@@ -83,49 +108,43 @@ const GamePage = () => {
     { id: 6, name: 'Level 6', color: '#06b6d4' }
   ];
 
-  // 挑戰數據
+  // 挑戰數據 - 每個Level只有4個挑戰
   const challenges = {
     1: [
-      { id: 1, title: '識別釣魚郵件', description: '識別可疑的釣魚郵件', completed: false },
-      { id: 2, title: '檢查發件人', description: '驗證發件人身份', completed: false },
+      { id: 1, title: '授權識別', description: '識別可疑的空投授權', completed: false },
+      { id: 2, title: '獨徑無歧', description: '唯一之跡，無擾無疑', completed: false },
       { id: 3, title: '避免點擊連結', description: '不要點擊可疑連結', completed: false },
-      { id: 4, title: '驗證網站', description: '檢查網站安全性', completed: false },
-      { id: 5, title: '報告釣魚', description: '報告釣魚攻擊', completed: false }
+      { id: 4, title: '眾跡分明', description: '多跡並行，各不相蒙', completed: false }
     ],
     2: [
-      { id: 1, title: '錢包安全', description: '保護錢包私鑰', completed: false },
-      { id: 2, title: '交易驗證', description: '驗證交易詳情', completed: false },
+      { id: 1, title: '高級地址投毒識別', description: '識別相似的DeFi協議地址', completed: false },
+      { id: 2, title: '末影惑流', description: '近似之跡，悄然分流', completed: false },
       { id: 3, title: '智能合約', description: '檢查合約代碼', completed: false },
-      { id: 4, title: '網路安全', description: '使用安全網路', completed: false },
-      { id: 5, title: '備份恢復', description: '備份重要數據', completed: false }
+      { id: 4, title: '網路安全', description: '使用安全網路', completed: false }
     ],
     3: [
       { id: 1, title: 'NFT 驗證', description: '驗證 NFT 真實性', completed: false },
-      { id: 2, title: '市場檢查', description: '檢查交易市場', completed: false },
+      { id: 2, title: '雙影疊跡', description: '兩道近似之影，混跡於眾流之中', completed: false },
       { id: 3, title: '價格分析', description: '分析價格合理性', completed: false },
-      { id: 4, title: '創作者驗證', description: '驗證創作者身份', completed: false },
-      { id: 5, title: '合約審查', description: '審查智能合約', completed: false }
+      { id: 4, title: '創作者驗證', description: '驗證創作者身份', completed: false }
     ],
     4: [
       { id: 1, title: 'DeFi 協議', description: '了解 DeFi 協議', completed: false },
-      { id: 2, title: '流動性挖礦', description: '安全參與挖礦', completed: false },
+      { id: 2, title: '形淆眾流', description: '形似者眾，真跡隱於其間', completed: false },
       { id: 3, title: '收益計算', description: '計算收益風險', completed: false },
-      { id: 4, title: '協議審計', description: '檢查協議審計', completed: false },
-      { id: 5, title: '風險管理', description: '管理投資風險', completed: false }
+      { id: 4, title: '協議審計', description: '檢查協議審計', completed: false }
     ],
     5: [
       { id: 1, title: '代幣分析', description: '分析代幣基本面', completed: false },
-      { id: 2, title: '技術分析', description: '進行技術分析', completed: false },
+      { id: 2, title: '微跡藏真', description: '真跡如塵，混於眾響之中', completed: false },
       { id: 3, title: '市場情緒', description: '分析市場情緒', completed: false },
-      { id: 4, title: '風險評估', description: '評估投資風險', completed: false },
-      { id: 5, title: '投資策略', description: '制定投資策略', completed: false }
+      { id: 4, title: '風險評估', description: '評估投資風險', completed: false }
     ],
     6: [
       { id: 1, title: '高級安全', description: '實施高級安全措施', completed: false },
       { id: 2, title: '多簽錢包', description: '使用多簽錢包', completed: false },
       { id: 3, title: '硬體錢包', description: '使用硬體錢包', completed: false },
-      { id: 4, title: '安全審計', description: '進行安全審計', completed: false },
-      { id: 5, title: '應急計劃', description: '制定應急計劃', completed: false }
+      { id: 4, title: '安全審計', description: '進行安全審計', completed: false }
     ]
   };
 
@@ -134,6 +153,46 @@ const GamePage = () => {
       console.log('開始遊戲:', { selectedLevel });
       setShowChallenge(true);
     }
+  };
+
+  const handleStartChallenge = () => {
+    // 使用新的动态路由系统
+    if (selectedLevel === 1) {
+      if (selectedChallengeIndex === 0) {
+        // Level 1-1: 识别授权陷阱（Solana空投诈骗）
+        navigate('/challenge/approvalTrap/level1-1');
+      } else if (selectedChallengeIndex === 1) {
+        // Level 1-2: 安全转账操作（地址投毒基础）
+        navigate('/challenge/addressPoisoning/level1-2');
+      } else if (selectedChallengeIndex === 3) {
+        // Level 1-4: 多条转账记录挑战
+        navigate('/challenge/addressPoisoning/level1-4');
+      }
+    } else if (selectedLevel === 2) {
+      if (selectedChallengeIndex === 0) {
+        // Level 2-1: 高级地址投毒识别
+        navigate('/challenge/addressPoisoning/level2-1');
+      } else if (selectedChallengeIndex === 1) {
+        // Level 2-2: 末影惑流（相似地址投毒）
+        navigate('/challenge/addressPoisoning/level2-2');
+      }
+    } else if (selectedLevel === 3) {
+      if (selectedChallengeIndex === 1) {
+        // Level 3-2: 双影叠迹（多条投毒地址 + 翻页）
+        navigate('/challenge/addressPoisoning/level3-2');
+      }
+    } else if (selectedLevel === 4) {
+      if (selectedChallengeIndex === 1) {
+        // Level 4-2: 形淆众流（多个投毒地址混淆）
+        navigate('/challenge/addressPoisoning/level4-2');
+      }
+    } else if (selectedLevel === 5) {
+      if (selectedChallengeIndex === 1) {
+        // Level 5-2: 微跡藏真（小额投毒地址混淆）
+        navigate('/challenge/addressPoisoning/level5-2');
+      }
+    }
+    // 继续添加其他关卡的挑战路由
   };
 
   // 處理關卡選擇
@@ -168,7 +227,18 @@ const GamePage = () => {
       selectLevel: '選擇關卡',
       startAdventure: '開始冒險',
       backHome: '返回主頁',
-      backpack: '背包'
+      backpack: '背包',
+      backpackTitle: '背包',
+      selectedItem: '選中物品',
+      itemDescription: '道具描述',
+      rarity: '稀有度',
+      type: '類型',
+      items: '物品',
+      emptySlots: '空位',
+      challengeTitle: '挑戰',
+      levelDescription: '關卡描述',
+      progress: '完成進度',
+      startAdventureButton: '開始冒險'
     },
     english: {
       title: 'WEB3 PHISHING GAME',
@@ -176,7 +246,18 @@ const GamePage = () => {
       selectLevel: 'Select Level',
       startAdventure: 'Start Adventure',
       backHome: 'Back Home',
-      backpack: 'Backpack'
+      backpack: 'Backpack',
+      backpackTitle: 'Backpack',
+      selectedItem: 'Selected Item',
+      itemDescription: 'Item Description',
+      rarity: 'Rarity',
+      type: 'Type',
+      items: 'Items',
+      emptySlots: 'Empty Slots',
+      challengeTitle: 'Challenges',
+      levelDescription: 'Level Description',
+      progress: 'Progress',
+      startAdventureButton: 'Start Adventure'
     }
   };
 
@@ -347,7 +428,7 @@ const GamePage = () => {
                   fontFamily: 'Courier New, Monaco, Menlo, Ubuntu Mono, monospace',
                   textTransform: 'uppercase'
                 }}>
-                  選中物品
+                  {currentContent.selectedItem}
                 </h4>
                 <div className="w-32 h-32 flex items-center justify-center mx-auto" style={{
                   border: '3px solid #000000',
@@ -371,7 +452,7 @@ const GamePage = () => {
                   fontFamily: 'Courier New, Monaco, Menlo, Ubuntu Mono, monospace',
                   textTransform: 'uppercase'
                 }}>
-                  道具描述
+                  {currentContent.itemDescription}
                 </h4>
                 <div className="p-4 border-2 border-gray-600 bg-gray-800" style={{
                   border: '2px solid #4b5563',
@@ -379,10 +460,18 @@ const GamePage = () => {
                   fontFamily: 'Courier New, Monaco, Menlo, Ubuntu Mono, monospace',
                   borderRadius: '8px'
                 }}>
-                  <h5 className="text-lg font-bold text-white mb-2">{items[selectedItem]?.name}</h5>
-                  <p className="text-sm text-gray-300 mb-2">{items[selectedItem]?.description}</p>
-                  <p className="text-xs text-gray-400">稀有度: {items[selectedItem]?.rarity}</p>
-                  <p className="text-xs text-gray-400">類型: {items[selectedItem]?.type}</p>
+                  <h5 className="text-lg font-bold text-white mb-2">
+                    {language === 'chinese' ? items[selectedItem]?.name : items[selectedItem]?.nameEn}
+                  </h5>
+                  <p className="text-sm text-gray-300 mb-2">
+                    {language === 'chinese' ? items[selectedItem]?.description : items[selectedItem]?.descriptionEn}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {currentContent.rarity}: {language === 'chinese' ? items[selectedItem]?.rarity : items[selectedItem]?.rarityEn}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {currentContent.type}: {language === 'chinese' ? items[selectedItem]?.type : items[selectedItem]?.typeEn}
+                  </p>
                 </div>
               </div>
             </div>
@@ -412,7 +501,7 @@ const GamePage = () => {
                       style={{ imageRendering: 'pixelated' }}
                     />
                   ) : (
-                    <span className="text-gray-500">空</span>
+                    <span className="text-gray-500">{language === 'chinese' ? '空' : 'Empty'}</span>
                   )}
                 </div>
               ))}
@@ -423,8 +512,8 @@ const GamePage = () => {
               fontFamily: 'Courier New, Monaco, Menlo, Ubuntu Mono, monospace',
               lineHeight: '1.4'
             }}>
-              <p>物品: 3/10</p>
-              <p>空位: 7</p>
+              <p>{currentContent.items}: 3/10</p>
+              <p>{currentContent.emptySlots}: 7</p>
             </div>
           </div>
         </motion.div>
@@ -447,8 +536,9 @@ const GamePage = () => {
           
           {/* 挑戰內容 */}
           <div className="relative p-20 text-white" style={{
-            width: '1600px',
-            minHeight: '800px',
+            width: '95vw',
+            maxWidth: '1800px',
+            minHeight: '90vh',
             backgroundColor: '#1f2937',
             border: '6px solid #000000',
             boxShadow: '12px 12px 0px #000000',
@@ -478,15 +568,18 @@ const GamePage = () => {
               textTransform: 'uppercase',
               letterSpacing: '4px'
             }}>
-              {levels[selectedLevel - 1]?.name} - 挑戰
+              {levels[selectedLevel - 1]?.name} - {currentContent.challengeTitle}
             </h3>
 
             {/* 挑戰列表 - 圓形設計 */}
-            <div className="grid grid-cols-5 gap-20 mb-40">
+            <div className="grid grid-cols-4 gap-20 mb-40">
               {challenges[selectedLevel]?.map((challenge, index) => (
                 <div
                   key={challenge.id}
-                  onClick={() => setSelectedChallenge(selectedChallenge === index ? null : index)}
+                  onClick={() => {
+                    setSelectedChallenge(selectedChallenge === index ? null : index);
+                    setSelectedChallengeIndex(selectedChallenge === index ? null : index);
+                  }}
                   className="flex flex-col items-center cursor-pointer hover:scale-105 transition-all duration-200"
                 >
                   {/* 圓形挑戰按鈕 - 超大尺寸 */}
@@ -518,7 +611,7 @@ const GamePage = () => {
                   </h4>
 
                   {/* 挑戰描述 */}
-                  <p className="text-xl text-gray-300 text-center leading-relaxed mb-12" style={{
+                  <p className="text-xl text-gray-300 text-center leading-relaxed mb-8" style={{
                     fontFamily: 'Courier New, Monaco, Menlo, Ubuntu Mono, monospace',
                     lineHeight: '2.0',
                     paddingTop: '12px',
@@ -526,6 +619,7 @@ const GamePage = () => {
                   }}>
                     {challenge.description}
                   </p>
+
                 </div>
               ))}
             </div>
@@ -544,7 +638,7 @@ const GamePage = () => {
                 lineHeight: '1.6',
                 paddingTop: '8px'
               }}>
-                關卡描述
+                {currentContent.levelDescription}
               </h4>
               <p className="text-2xl text-gray-300 leading-relaxed mb-8" style={{
                 fontFamily: 'Courier New, Monaco, Menlo, Ubuntu Mono, monospace',
@@ -552,7 +646,10 @@ const GamePage = () => {
                 paddingTop: '12px',
                 paddingBottom: '16px'
               }}>
-                在這個關卡中，你將學習如何識別和防範Web3釣魚攻擊。完成所有挑戰來獲得安全知識點，提升你的防詐能力！
+                {language === 'chinese' 
+                  ? '在這個關卡中，你將學習如何識別和防範Web3釣魚攻擊。完成所有挑戰來獲得安全知識點，提升你的防詐能力！'
+                  : 'In this level, you will learn how to identify and prevent Web3 phishing attacks. Complete all challenges to gain security knowledge points and improve your anti-fraud abilities!'
+                }
               </p>
             </div>
 
@@ -565,8 +662,41 @@ const GamePage = () => {
                 paddingTop: '16px',
                 paddingBottom: '20px'
               }}>
-                完成進度: 0/5
+                {currentContent.progress}: 0/4
               </p>
+            </div>
+
+            {/* 開始挑戰按鈕和背包按鈕 */}
+            <div className="text-center mt-8">
+              {selectedChallengeIndex === null && (
+                <p className="text-gray-400 mb-4" style={{
+                  fontFamily: 'Courier New, Monaco, Menlo, Ubuntu Mono, monospace',
+                  fontSize: '14px'
+                }}>
+                  {language === 'chinese' ? '請先選擇一個挑戰' : 'Please select a challenge first'}
+                </p>
+              )}
+              <motion.button
+                onClick={handleStartChallenge}
+                disabled={selectedChallengeIndex === null}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  ...pixelButtonStyle,
+                  backgroundColor: selectedChallengeIndex !== null ? '#22d3ee' : '#6b7280',
+                  color: '#ffffff',
+                  padding: '16px 32px',
+                  fontSize: '20px',
+                  cursor: selectedChallengeIndex !== null ? 'pointer' : 'not-allowed',
+                  fontFamily: 'Courier New, Monaco, Menlo, Ubuntu Mono, monospace',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  boxShadow: selectedChallengeIndex !== null ? '0 0 20px rgba(34, 211, 238, 0.3)' : 'none'
+                }}
+              >
+                {currentContent.startAdventureButton}
+              </motion.button>
             </div>
           </div>
         </motion.div>
@@ -609,7 +739,7 @@ const GamePage = () => {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="w-full max-w-5xl"
+            className="w-full max-w-6xl"
           >
             <div 
               className="p-6 rounded-lg"
@@ -675,6 +805,7 @@ const GamePage = () => {
           </motion.button>
         </motion.div>
       </div>
+
 
       {/* 像素風格 CSS */}
       <style jsx>{`
