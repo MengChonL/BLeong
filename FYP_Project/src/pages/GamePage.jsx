@@ -111,7 +111,7 @@ const GamePage = () => {
   // 挑戰數據 - 每個Level只有4個挑戰
   const challenges = {
     1: [
-      { id: 1, title: '授權識別', description: '識別可疑的空投授權', completed: false },
+      { id: 1, title: '餌光誘許', description: '一紙虛贈，換得全權之許。', completed: false },
       { id: 2, title: '獨徑無歧', description: '唯一之跡，無擾無疑', completed: false },
       { id: 3, title: '避免點擊連結', description: '不要點擊可疑連結', completed: false },
       { id: 4, title: '眾跡分明', description: '多跡並行，各不相蒙', completed: false }
@@ -120,7 +120,7 @@ const GamePage = () => {
       { id: 1, title: '高級地址投毒識別', description: '識別相似的DeFi協議地址', completed: false },
       { id: 2, title: '末影惑流', description: '近似之跡，悄然分流', completed: false },
       { id: 3, title: '智能合約', description: '檢查合約代碼', completed: false },
-      { id: 4, title: '網路安全', description: '使用安全網路', completed: false }
+      { id: 4, title: '薦所直連', description: '依網紅直薦，啟用專屬交易通道。', completed: false }
     ],
     3: [
       { id: 1, title: 'NFT 驗證', description: '驗證 NFT 真實性', completed: false },
@@ -142,7 +142,7 @@ const GamePage = () => {
     ],
     6: [
       { id: 1, title: '高級安全', description: '實施高級安全措施', completed: false },
-      { id: 2, title: '多簽錢包', description: '使用多簽錢包', completed: false },
+      { id: 2, title: '時限爭鋒', description: '真偽僅隔毫釐，而時光不待細察', completed: false },
       { id: 3, title: '硬體錢包', description: '使用硬體錢包', completed: false },
       { id: 4, title: '安全審計', description: '進行安全審計', completed: false }
     ]
@@ -160,7 +160,7 @@ const GamePage = () => {
     if (selectedLevel === 1) {
       if (selectedChallengeIndex === 0) {
         // Level 1-1: 识别授权陷阱（Solana空投诈骗）
-        navigate('/challenge/approvalTrap/level1-1');
+        navigate('/challenge/phishing/level1-1');
       } else if (selectedChallengeIndex === 1) {
         // Level 1-2: 安全转账操作（地址投毒基础）
         navigate('/challenge/addressPoisoning/level1-2');
@@ -175,6 +175,9 @@ const GamePage = () => {
       } else if (selectedChallengeIndex === 1) {
         // Level 2-2: 末影惑流（相似地址投毒）
         navigate('/challenge/addressPoisoning/level2-2');
+      } else if (selectedChallengeIndex === 3) {
+        // Level 2-4: Google 搜尋識別（釣魚 vs 官方）
+        navigate('/challenge/phishing/level2-4');
       }
     } else if (selectedLevel === 3) {
       if (selectedChallengeIndex === 1) {
@@ -190,6 +193,11 @@ const GamePage = () => {
       if (selectedChallengeIndex === 1) {
         // Level 5-2: 微跡藏真（小额投毒地址混淆）
         navigate('/challenge/addressPoisoning/level5-2');
+      }
+    } else if (selectedLevel === 6) {
+      if (selectedChallengeIndex === 1) {
+        // Level 6-2: 時限爭鋒（90秒限时NFT交易挑战）
+        navigate('/challenge/addressPoisoning/level6-2');
       }
     }
     // 继续添加其他关卡的挑战路由

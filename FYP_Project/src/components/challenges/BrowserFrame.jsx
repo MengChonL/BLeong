@@ -35,16 +35,16 @@ const BrowserFrame = ({
             </div>
             {/* 地址栏 */}
             <div 
-              className="mx-4 px-4 py-2 rounded-lg"
+              className="mx-4 px-4 py-2 rounded-lg flex-1"
               style={{ 
                 backgroundColor: '#1a1a1a',
                 border: '3px solid #000000',
                 color: urlColor,
-                width: '400px',
-                minWidth: '400px'
+                minWidth: '480px',
+                maxWidth: '100%'
               }}
             >
-              <span className="text-sm font-mono">{url}</span>
+              <span className="text-sm font-mono" style={{ display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{url}</span>
             </div>
           </div>
         </div>

@@ -8,37 +8,29 @@ import BNBIcon from '../../assets/BNB.png';
 import MetaMaskIcon from '../../assets/MetaMask_Fox.png';
 
 /**
- * 授权陷阱挑战组件 - Level 1-1
- * 识别空投诈骗中的无限授权陷阱
+ * 通用钓鱼邮件挑战组件 - Level 1-1
+ * 包含钓鱼邮件识别和授权陷阱两个阶段
  */
-const ApprovalTrapChallenge = ({ config }) => {
-  const [language, setLanguage] = useState('chinese');
-  const [showResult, setShowResult] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
+const PhishingChallenge = ({ config }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(config?.transaction?.timeLimit * 3600 || 7200); // 转换为秒，默認2小時
-  const [showMetaMask, setShowMetaMask] = useState(false); // 控制 MetaMask 彈窗顯示
+  const [showResult, setShowResult] = useState(false);
+  const [language, setLanguage] = useState('chinese');
+  const [view, setView] = useState('email'); // 'email' | 'approvalTrap'
+  const [selectedEmail, setSelectedEmail] = useState(null);
+  const [showMetaMask, setShowMetaMask] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(config?.transaction?.timeLimit * 3600 || 7200);
+  const [isCorrect, setIsCorrect] = useState(false);
 
-  // 如果沒有配置，顯示錯誤信息
   if (!config) {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-center text-white">
-          <h1 className="text-4xl font-bold mb-4">配置未找到</h1>
-          <p className="text-xl mb-4">無法加載挑戰配置</p>
-          <button
-            onClick={() => window.history.back()}
-            className="mt-6 px-6 py-3 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600"
-          >
-            返回
-          </button>
-        </div>
+      <div className="text-white text-center p-8">
+        <h1 className="text-2xl">挑战配置未找到</h1>
       </div>
     );
   }
 
   // 倒计时逻辑
-  useEffect(() => {
+  React.useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 0) {
@@ -71,10 +63,279 @@ const ApprovalTrapChallenge = ({ config }) => {
     setShowMetaMask(true);
   };
 
-  const currentContent = config.content[language];
-  const dangerSignals = config.signals[language];
-  const education = config.education[language];
+  // 空投邮件数据
+  const airdropEmail = {
+    sender: language === 'chinese' ? 'Arbitrum 官方團隊' : 'Arbitrum Official Team',
+    senderEmail: 'noreply@arbitrum-airdrop.com',
+    subject: language === 'chinese' ? '🎉 恭喜！您已獲得 Arbitrum 空投資格' : '🎉 Congratulations! You are eligible for Arbitrum Airdrop',
+    preview: language === 'chinese' ? '您曾在 Arbitrum One 上進行過交易，符合空投條件...' : 'You have transacted on Arbitrum One and are eligible for airdrop...',
+    time: language === 'chinese' ? '2 小時前' : '2 hours ago',
+    content: language === 'chinese' 
+      ? `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2 style="color: #2E7D32; margin-bottom: 20px;">🎉 恭喜您獲得 Arbitrum 空投！</h2>
+          <p>親愛的用戶，</p>
+          <p>我們很高興地通知您，由於您在 Arbitrum One 網絡上的交易活動，您已符合我們的空投條件！</p>
+          <p><strong>立即領取您的空投：</strong></p>
+          <p><a href="#" onclick="window.handleAirdropLinkClick && window.handleAirdropLinkClick(); return false;" 
+               style="color: #1a73e8; text-decoration: underline;">https://arbitrum-airdrop.com/claim</a></p>
+          <p style="color: #666; font-size: 12px; margin-top: 30px;">
+            <strong>注意：</strong>此郵件由 Arbitrum 官方團隊發送。請勿回覆此郵件。
+          </p>
+        </div>
+      `
+      : `
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2 style="color: #2E7D32; margin-bottom: 20px;">🎉 Congratulations on your Arbitrum Airdrop!</h2>
+          <p>Dear User,</p>
+          <p>We are pleased to inform you that due to your transaction activity on the Arbitrum One network, you are eligible for our airdrop!</p>
+          <p><strong>Claim your airdrop now:</strong></p>
+          <p><a href="#" onclick="window.handleAirdropLinkClick && window.handleAirdropLinkClick(); return false;" 
+               style="color: #1a73e8; text-decoration: underline;">https://arbitrum-airdrop.com/claim</a></p>
+          <p style="color: #666; font-size: 12px; margin-top: 30px;">
+            <strong>Note:</strong> This email is sent by the Arbitrum official team. Please do not reply to this email.
+          </p>
+        </div>
+      `
+  };
 
+  const handleEmailClick = (email) => {
+    setSelectedEmail(email);
+  };
+
+  const handleAirdropLinkClick = () => {
+    // 切换到授权陷阱视图
+    setView('approvalTrap');
+  };
+
+  // 將函數暴露到全局，供 HTML onclick 調用
+  useEffect(() => {
+    window.handleAirdropLinkClick = handleAirdropLinkClick;
+    return () => {
+      delete window.handleAirdropLinkClick;
+    };
+  }, []);
+
+  const currentContent = config.content[language];
+
+  // 通用文本
+  const commonText = {
+    chinese: {
+      yes: '是',
+      no: '不是',
+      correct: '✓ 正确！这确实是诈骗邮件',
+      incorrect: '✗ 错误！这确实是诈骗邮件',
+      explanation: '识别要点',
+      continueButton: '继续',
+      retryButton: '重试',
+    },
+    english: {
+      yes: 'Yes',
+      no: 'No',
+      correct: '✓ Correct! This is indeed a scam email',
+      incorrect: '✗ Wrong! This is indeed a scam email',
+      explanation: 'Key Points',
+      continueButton: 'Continue',
+      retryButton: 'Retry',
+    }
+  };
+
+  const common = commonText[language];
+
+  // 邮件界面样式
+  const emailStyles = `
+    .email-interface {
+      display: flex;
+      height: 100vh;
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+
+    .email-sidebar {
+      width: 200px;
+      background: #fff;
+      border-right: 1px solid #ddd;
+      padding: 20px;
+    }
+
+    .compose-btn {
+      width: 100%;
+      padding: 12px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .email-list {
+      flex: 1;
+      background: #fff;
+      overflow-y: auto;
+    }
+
+    .email-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .email-item:hover {
+      background: #f8f9fa;
+    }
+
+    .email-item.phishing {
+      border-left: 4px solid #ea4335;
+    }
+
+    .email-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .email-sender {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sender-name {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .sender-email {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .email-time {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .email-subject {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .email-preview {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    .phishing-warning {
+      color: #ea4335;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    .email-content {
+      flex: 1;
+      background: #fff;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .email-content-header {
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .email-content-sender {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 10px;
+    }
+
+    .email-content-time {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .email-content-subject {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .email-content-body {
+      line-height: 1.6;
+      color: #333;
+    }
+  `;
+
+  const dangerSignals = config.signals?.[language] || [];
+  const education = config.education?.[language];
+
+  // 邮件视图
+  if (view === 'email') {
+    return (
+      <ChallengeTemplate
+        language={language}
+        setLanguage={setLanguage}
+        title={language === 'chinese' ? 'Level 1-1: 釣魚郵件識別' : 'Level 1-1: Phishing Email Recognition'}
+        showLanguageSwitch={true}
+        containerMaxWidth="80vw"
+        containerMaxHeight="80vh"
+      >
+        <BrowserFrame url="https://mail.google.com" urlColor="#22d3ee">
+          <div className="email-interface">
+            <style>{emailStyles}</style>
+            
+            {/* 邮件列表 - 只显示一条空投邮件 */}
+            <div className="email-list">
+              <div 
+                className="email-item phishing"
+                onClick={() => handleEmailClick(airdropEmail)}
+              >
+                <div className="email-header">
+                  <div className="email-sender">
+                    <span className="sender-name">{airdropEmail.sender}</span>
+                    <span className="sender-email">{airdropEmail.senderEmail}</span>
+                  </div>
+                  <div className="email-time">{airdropEmail.time}</div>
+                </div>
+                <div className="email-subject">{airdropEmail.subject}</div>
+                <div className="email-preview">{airdropEmail.preview}</div>
+                <div className="phishing-warning">
+                  ⚠️ {language === 'chinese' ? '可疑郵件' : 'Suspicious Email'}
+                </div>
+              </div>
+            </div>
+
+            {/* 邮件内容 - 空投邮件详情 */}
+            {selectedEmail && (
+              <div className="email-content">
+                <div className="email-content-header">
+                  <div className="email-content-sender">
+                    <span className="sender-name">{selectedEmail.sender}</span>
+                    <span className="sender-email">{selectedEmail.senderEmail}</span>
+                  </div>
+                  <div className="email-content-time">{selectedEmail.time}</div>
+                </div>
+                <div className="email-content-subject">{selectedEmail.subject}</div>
+                <div className="email-content-body">
+                  <div dangerouslySetInnerHTML={{ __html: selectedEmail.content }}></div>
+                </div>
+              </div>
+            )}
+          </div>
+        </BrowserFrame>
+      </ChallengeTemplate>
+    );
+  }
+
+  // 授权陷阱视图
   return (
     <ChallengeTemplate
       language={language}
@@ -137,7 +398,7 @@ const ApprovalTrapChallenge = ({ config }) => {
                       <div>
                         <div className="text-sm mb-2" style={{ color: '#9a3412' }}>網絡</div>
                         <div className="text-xl font-bold" style={{ color: '#1a1a1a' }}>
-                          {config.transaction.network}
+                          {config.transaction?.network || 'BNB Smart Chain'}
                         </div>
                       </div>
                     </div>
@@ -151,7 +412,7 @@ const ApprovalTrapChallenge = ({ config }) => {
                   }}>
                     <div className="text-sm mb-3" style={{ color: '#1e40af' }}>發送者錢包地址</div>
                     <div className="font-mono text-xl font-bold" style={{ color: '#1e3a8a' }}>
-                      {config.transaction.senderShort}
+                      {config.transaction?.senderShort || '0x1234...5678'}
                     </div>
                   </div>
 
@@ -227,13 +488,13 @@ const ApprovalTrapChallenge = ({ config }) => {
                       <div>
                         <div className="text-xs mb-1" style={{ color: '#9ca3af' }}>網絡</div>
                         <div className="text-base font-bold" style={{ color: '#ffffff' }}>
-                          {config.transaction.network}
+                          {config.transaction?.network || 'BNB Smart Chain'}
                         </div>
                       </div>
                     </div>
                     <div className="text-xs mb-2" style={{ color: '#9ca3af' }}>錢包</div>
                     <div className="font-mono text-sm" style={{ color: '#ffffff' }}>
-                      {config.transaction.walletAddressShort}
+                      {config.transaction?.walletAddressShort || '0xB890...aB1F'}
                     </div>
                   </div>
 
@@ -251,7 +512,7 @@ const ApprovalTrapChallenge = ({ config }) => {
                     }}>
                       <div className="text-xs mb-2" style={{ color: '#9ca3af' }}>{currentContent.sender}</div>
                       <div className="font-mono text-base font-bold" style={{ color: '#ffffff' }}>
-                        {config.transaction.senderShort}
+                        {config.transaction?.senderShort || '0x1234...5678'}
                       </div>
                     </div>
 
@@ -262,7 +523,7 @@ const ApprovalTrapChallenge = ({ config }) => {
                     }}>
                       <div className="text-xs mb-2" style={{ color: '#9ca3af' }}>{currentContent.receiver}</div>
                       <div className="font-mono text-base font-bold" style={{ color: '#ffffff' }}>
-                        {config.transaction.receiverShort}
+                        {config.transaction?.receiverShort || '0x9ABC...DEF0'}
                       </div>
                     </div>
 
@@ -273,7 +534,7 @@ const ApprovalTrapChallenge = ({ config }) => {
                     }}>
                       <div className="text-xs mb-2" style={{ color: '#9ca3af' }}>{currentContent.amount}</div>
                       <div className="font-mono text-base font-bold" style={{ color: '#ffffff' }}>
-                        {config.transaction.amount}
+                        {config.transaction?.amount || '1000 SOLR'}
                       </div>
                     </div>
                   </div>
@@ -294,12 +555,12 @@ const ApprovalTrapChallenge = ({ config }) => {
                     <div className="space-y-3">
                       <div>
                         <span className="text-xs" style={{ color: '#9ca3af' }}>{currentContent.token}: </span>
-                        <span className="text-sm font-bold" style={{ color: '#ffffff' }}>{config.transaction.token}</span>
+                        <span className="text-sm font-bold" style={{ color: '#ffffff' }}>{config.transaction?.token || 'SOLR'}</span>
                       </div>
                       <div>
                         <span className="text-xs" style={{ color: '#9ca3af' }}>{currentContent.approvalAmount}: </span>
                         <span className="text-sm font-bold" style={{ color: '#ef4444' }}>
-                          {config.transaction.approvalAmount}
+                          {config.transaction?.approvalAmount || 'Unlimited (2^256-1)'}
                         </span>
                       </div>
                     </div>
@@ -316,13 +577,13 @@ const ApprovalTrapChallenge = ({ config }) => {
                     </div>
                     <div className="space-y-3 text-sm">
                       <div style={{ color: '#e5e7eb' }}>
-                        {currentContent.gasPrice}: <span style={{ color: '#ffffff', fontWeight: 'bold' }}>{config.transaction.gasPrice}</span>
+                        {currentContent.gasPrice}: <span style={{ color: '#ffffff', fontWeight: 'bold' }}>{config.transaction?.gasPrice || '5 Gwei'}</span>
                       </div>
                       <div style={{ color: '#e5e7eb' }}>
-                        {currentContent.gasLimit}: <span style={{ color: '#ffffff', fontWeight: 'bold' }}>{config.transaction.gasLimit}</span>
+                        {currentContent.gasLimit}: <span style={{ color: '#ffffff', fontWeight: 'bold' }}>{config.transaction?.gasLimit || '21000'}</span>
                       </div>
                       <div style={{ color: '#e5e7eb' }}>
-                        {currentContent.estimatedFee}: <span style={{ color: '#ffffff', fontWeight: 'bold' }}>{config.transaction.estimatedFee}</span>
+                        {currentContent.estimatedFee}: <span style={{ color: '#ffffff', fontWeight: 'bold' }}>{config.transaction?.estimatedFee || '0.000105 BNB'}</span>
                       </div>
                     </div>
                   </div>
@@ -356,20 +617,20 @@ const ApprovalTrapChallenge = ({ config }) => {
                   </div>
                 </div>
               )}
+            </div>
+          ) : null}
 
-                {/* 问题和选项 - 卡通风格 */}
-                {showMetaMask && (
-                <div className="text-center p-20" style={{ 
-                  background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
-                  borderRadius: '40px',
-                  boxShadow: '0 30px 60px rgba(0, 0, 0, 0.3), inset 0 -6px 0 rgba(0, 0, 0, 0.1)',
-                  border: '6px solid #fbbf24',
-                  marginTop: '10px',
-                  marginBottom: '10px',
-                  width: '100%',
-                  maxWidth: '800px',
-                  margin: '10px auto'
-                }}>
+          {/* 问题和选项 - 居中设计 */}
+          {showMetaMask && !showResult && (
+            <div className="flex justify-center items-center mt-8">
+              <div className="text-center p-20" style={{ 
+                background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                borderRadius: '40px',
+                boxShadow: '0 30px 60px rgba(0, 0, 0, 0.3), inset 0 -6px 0 rgba(0, 0, 0, 0.1)',
+                border: '6px solid #fbbf24',
+                width: '100%',
+                maxWidth: '800px'
+              }}>
                 <h3 className="text-5xl mb-20" style={{ 
                   color: '#1a1a1a',
                   textShadow: '4px 4px 0px #fbbf24, -2px -2px 0px #fef3c7',
@@ -447,10 +708,11 @@ const ApprovalTrapChallenge = ({ config }) => {
                   </motion.button>
                 </div>
               </div>
-                )}
             </div>
-          ) : (
-            /* 结果显示 */
+          )}
+
+          {/* 结果显示 */}
+          {showResult && (
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -493,25 +755,27 @@ const ApprovalTrapChallenge = ({ config }) => {
               </div>
 
               {/* 教育内容 */}
-              <div className="p-8 text-left" style={{ backgroundColor: '#f0f9ff', border: '2px solid #3b82f6' }}>
-                <h3 className="text-2xl font-bold mb-4" style={{ color: '#1e40af' }}>
-                  {education.title}
-                </h3>
-                <p className="text-lg mb-6" style={{ color: '#1e3a8a' }}>
-                  {education.description}
-                </p>
-                <h4 className="text-xl font-bold mb-3" style={{ color: '#1e40af' }}>
-                  安全提示：
-                </h4>
-                <ul className="space-y-2">
-                  {education.tips.map((tip, index) => (
-                    <li key={index} className="text-lg flex items-start gap-2" style={{ color: '#1e3a8a' }}>
-                      <span>•</span>
-                      <span>{tip}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {education && (
+                <div className="p-8 text-left" style={{ backgroundColor: '#f0f9ff', border: '2px solid #3b82f6' }}>
+                  <h3 className="text-2xl font-bold mb-4" style={{ color: '#1e40af' }}>
+                    {education.title}
+                  </h3>
+                  <p className="text-lg mb-6" style={{ color: '#1e3a8a' }}>
+                    {education.description}
+                  </p>
+                  <h4 className="text-xl font-bold mb-3" style={{ color: '#1e40af' }}>
+                    安全提示：
+                  </h4>
+                  <ul className="space-y-2">
+                    {education.tips?.map((tip, index) => (
+                      <li key={index} className="text-lg flex items-start gap-2" style={{ color: '#1e3a8a' }}>
+                        <span>•</span>
+                        <span>{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* 继续按钮 */}
               <motion.button
@@ -536,4 +800,4 @@ const ApprovalTrapChallenge = ({ config }) => {
   );
 };
 
-export default ApprovalTrapChallenge;
+export default PhishingChallenge;

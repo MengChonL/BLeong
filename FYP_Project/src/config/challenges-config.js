@@ -1395,12 +1395,270 @@ export const challengesConfig = {
         requireNetworkSelection: true, // 需要选择网络
         requireAssetSelection: true, // 需要选择资产
       }
+    },
+
+    // Level 6-2: 時限爭鋒 - 90秒限时NFT交易挑战
+    'level6-2': {
+      id: 'level6-2',
+      level: 6,
+      challengeNumber: 2,
+      type: 'addressPoisoning',
+      difficulty: 'expert',
+      mode: 'wallet',
+      timeLimit: 90, // 90秒时间限制
+      
+      content: {
+        chinese: {
+          title: 'Level 6-2: 時限爭鋒',
+          scenario: 'NFT交易緊急交付，時間就是金錢',
+          scenarioText: 'Ben 是一個 NFT 賣家，他約定你在 13:00 之前交付 120 ETH 來交易 NFT。但是 Alice 跟你有虛擬貨幣的交易 3000 USDT 兌換 125 ETH，本來跟你約好 12:30 款項，但最後竟然在 12:58:30 才把款項轉給你。現在你需要在 90 秒內完成向 Ben 轉帳 120 ETH。請仔細查看交易記錄，選擇正確的網絡和幣種，然後輸入正確的地址完成轉帳。',
+          recipientLabel: '收款人',
+          recipientName: 'Ben',
+          transferAmount: '120',
+          currency: 'ETH',
+          addressInputPlaceholder: '請輸入收款地址',
+          confirmButton: '確認轉帳 120 ETH',
+          transactionHistory: '交易記錄',
+          networkLabel: '網絡',
+          assetLabel: '資產',
+          benNetwork: 'Ben 使用的網絡',
+          timeWarning: '⚠️ 時間緊迫！你只有 90 秒完成轉帳！',
+          nftContext: 'NFT 交易緊急交付 - 需轉帳 120 ETH - 13:00 截止',
+        },
+        english: {
+          title: 'Level 6-2: Time Critical',
+          scenario: 'NFT trade urgent delivery, time is money',
+          scenarioText: 'Ben is an NFT seller who scheduled you to deliver 120 ETH before 13:00 for NFT trading. However, Alice had a cryptocurrency trade with you: 3000 USDT for 125 ETH, originally scheduled for 12:30, but the payment was only transferred at 12:58:30. Now you need to complete the transfer of 120 ETH to Ben within 90 seconds. Please carefully check the transaction history, select the correct network and asset, then enter the correct address to complete the transfer.',
+          recipientLabel: 'Recipient',
+          recipientName: 'Ben',
+          transferAmount: '120',
+          currency: 'ETH',
+          addressInputPlaceholder: 'Enter recipient address',
+          confirmButton: 'Confirm Transfer 120 ETH',
+          transactionHistory: 'Transaction History',
+          networkLabel: 'Network',
+          assetLabel: 'Asset',
+          benNetwork: "Ben's Network",
+          timeWarning: '⚠️ Time critical! You only have 90 seconds to complete the transfer!',
+          nftContext: 'NFT Trade Urgent Delivery - Transfer 120 ETH - Deadline 13:00',
+        }
+      },
+      
+      // 收款人信息
+      recipient: {
+        username: 'Ben',
+        avatar: 'B',
+        address: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+        relationship: {
+          chinese: 'NFT 賣家',
+          english: 'NFT Seller'
+        }
+      },
+      
+      // 地址信息
+      addresses: {
+        correct: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+        poisoned1: '0x742d35Cc6634C0532967a3b844Bc454e4438f44e', // 投毒地址1
+        poisoned2: '0x742d35Cc6634C0532967a3b844Bc454e4438f44e', // 投毒地址2
+      },
+      
+      // 网络和资产选项
+      networks: [
+        {
+          id: 'ethereum',
+          name: 'Ethereum',
+          description: {
+            chinese: '主網，高安全性，高 gas',
+            english: 'Mainnet, High security, High gas'
+          },
+          icon: 'ethereum',
+          color: '#627eea',
+          isCorrect: false,
+        },
+        {
+          id: 'arbitrum',
+          name: 'Arbitrum One',
+          description: {
+            chinese: 'Layer 2，低 gas，快速',
+            english: 'Layer 2, Low gas, Fast'
+          },
+          icon: 'arbitrum',
+          color: '#28a0f0',
+          isCorrect: true, // Ben 使用 Arbitrum One
+        }
+      ],
+      
+      assets: [
+        {
+          id: 'eth',
+          symbol: 'ETH',
+          name: 'Ethereum',
+          balance: '125.4',
+          icon: 'ethereum',
+          isCorrect: true, // 正确的币种
+        },
+        {
+          id: 'usdt',
+          symbol: 'USDT',
+          name: 'Tether USD',
+          balance: '3000',
+          icon: 'usdt',
+          isCorrect: false,
+        }
+      ],
+      
+      // 钱包信息
+      wallet: {
+        balance: '125.4',
+        currency: 'ETH',
+        network: 'arbitrum',
+        defaultNetwork: 'ethereum',
+        defaultAsset: 'eth',
+        transactions: [
+          // 第1条：Alice 大额收款 - 125 ETH（延迟付款）
+          {
+            type: 'received',
+            amount: '125',
+            currency: 'ETH',
+            network: 'ethereum',
+            from: '0x8f3C2a5E7d9B4c1A6e8F5D3B2a7C9E1f4A6B8D2e',
+            to: '0x8f3C2a5E7d9B4c1A6e8F5D3B2a7C9E1f4A6B8D2e',
+            fromName: 'Alice',
+            toName: 'Alice',
+            timeAgo: { chinese: '1 分钟前', english: '1 minute ago' },
+            status: 'success'
+          },
+          // 第2条：给 Alice 的 3000 USDT 转账
+          {
+            type: 'sent',
+            amount: '3000',
+            currency: 'USDT',
+            network: 'ethereum',
+            to: '0x8f3C2a5E7d9B4c1A6e8F5D3B2a7C9E1f4A6B8D2e',
+            toName: 'Alice',
+            timeAgo: { chinese: '2 分钟前', english: '2 minutes ago' },
+            status: 'success'
+          },
+          // 第3条：投毒地址1 - 收款
+          {
+            type: 'received',
+            amount: '0.01',
+            currency: 'USDT',
+            network: 'ethereum',
+            from: '0x742d35Cc6634C0532967a3b844Bc454e4438f44e',
+            to: '0x742d35Cc6634C0532967a3b844Bc454e4438f44e',
+            fromName: 'Ben',
+            toName: 'Ben',
+            timeAgo: { chinese: '5 分钟前', english: '5 minutes ago' },
+            status: 'success'
+          },
+          // 第4条：其他交易
+          {
+            type: 'sent',
+            amount: '0.5',
+            currency: 'ETH',
+            network: 'ethereum',
+            to: '0x3A9D5f7E2c1B8a4F6d3E9c7A5b2F8e1D4c6A9B7f',
+            toName: 'Charlie',
+            timeAgo: { chinese: '10 分钟前', english: '10 minutes ago' },
+            status: 'success'
+          },
+          // 第5条：投毒地址 - 收款（第一页最后一条）
+          {
+            type: 'received',
+            amount: '0.5',
+            currency: 'USDT',
+            network: 'ethereum',
+            from: '0x742d35Cc6634C0532967a3b844Bc454e4438f44e',
+            to: '0x742d35Cc6634C0532967a3b844Bc454e4438f44e',
+            fromName: 'Ben',
+            toName: 'Ben',
+            timeAgo: { chinese: '15 分钟前', english: '15 minutes ago' },
+            status: 'success'
+          },
+          // 第6条：投毒地址2 - 收款（第二页）
+          {
+            type: 'received',
+            amount: '0.01',
+            currency: 'USDT',
+            network: 'ethereum',
+            from: '0x742d35Cc6634C0532967a3b844Bc454e4438f44e',
+            to: '0x742d35Cc6634C0532967a3b844Bc454e4438f44e',
+            fromName: 'Ben',
+            toName: 'Ben',
+            timeAgo: { chinese: '30 分钟前', english: '30 minutes ago' },
+            status: 'success'
+          },
+          // 第7条：其他交易
+          {
+            type: 'sent',
+            amount: '200',
+            currency: 'USDT',
+            network: 'ethereum',
+            to: '0xE6b4C2f8A1d9B7e3F5c8A2d6E9b1F4a7C3e8D5b2',
+            toName: 'David',
+            timeAgo: { chinese: '1 小时前', english: '1 hour ago' },
+            status: 'success'
+          },
+          // 第8条：其他交易
+          {
+            type: 'received',
+            amount: '1.2',
+            currency: 'ETH',
+            network: 'ethereum',
+            from: '0x1234567890abcdef1234567890abcdef12345678',
+            to: '0x1234567890abcdef1234567890abcdef12345678',
+            fromName: 'Emma',
+            toName: 'Emma',
+            timeAgo: { chinese: '2 小时前', english: '2 hours ago' },
+            status: 'success'
+          },
+          // 第9条：正确地址 - 收款（第二页）
+          {
+            type: 'received',
+            amount: '0.5',
+            currency: 'ETH',
+            network: 'arbitrum',
+            from: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+            to: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+            fromName: 'Ben',
+            toName: 'Ben',
+            timeAgo: { chinese: '3 小时前', english: '3 hours ago' },
+            status: 'success'
+          },
+          // 第10条：其他交易
+          {
+            type: 'sent',
+            amount: '100',
+            currency: 'USDT',
+            network: 'ethereum',
+            to: '0x9876543210fedcba9876543210fedcba98765432',
+            toName: 'Frank',
+            timeAgo: { chinese: '5 小时前', english: '5 hours ago' },
+            status: 'success'
+          }
+        ]
+      },
+      
+      // 转账详情
+      transfer: {
+        amount: '120',
+        currency: 'ETH',
+        network: 'arbitrum',
+        recipient: 'Ben',
+        recipientAddress: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+        correctNetwork: 'arbitrum',
+        correctAsset: 'eth',
+        requireAddressInput: true,
+        requireNetworkSelection: true,
+        requireAssetSelection: true
+      }
     }
   },
   
   // 授权陷阱类型挑战
   approvalTrap: {
-    // Level 1-1: Solana空投授权陷阱
+    // Level 1-1: 餌光誘許 (Baited Consent)
     'level1-1': {
       id: 'level1-1',
       level: 1,
@@ -1410,7 +1668,8 @@ export const challengesConfig = {
       
       content: {
         chinese: {
-          title: 'Level 1-1: 授權識別',
+          title: 'Level 1-1: 餌光誘許',
+          subtitle: '一紙虛贈，換得全權之許。',
           airdropTitle: '恭喜！你已被抽中！',
           airdropText: '免費獲得 1000 Solana (SOLR)',
           network: 'BNB Smart Chain',
@@ -1440,7 +1699,210 @@ export const challengesConfig = {
           incorrectAnswer: '是',
         },
         english: {
-          title: 'Level 1-1: Approval Recognition',
+          title: 'Level 1-1: Baited Consent',
+          subtitle: 'A phantom gift—in exchange for full consent.',
+          airdropTitle: 'Congratulations! You have been selected!',
+          airdropText: 'Claim 1000 Solana (SOLR) for FREE',
+          network: 'BNB Smart Chain',
+          walletAddress: '0xB890...aB1F',
+          claimButton: 'Claim 1000 Solana',
+          deadline: 'Claim Deadline',
+          hoursLeft: 'hours',
+          metamaskTitle: 'MetaMask',
+          transactionConfirm: 'Transaction Confirmation',
+          sender: 'Sender',
+          receiver: 'Receiver',
+          amount: 'Amount',
+          contractCall: 'Contract Call',
+          approveFunction: 'approve(address, amount)',
+          token: 'Token',
+          approvalAmount: 'Approval Amount',
+          unlimited: 'Unlimited',
+          gasFee: 'Gas Fee',
+          gasPrice: 'Gas Price',
+          gasLimit: 'Gas Limit',
+          estimatedFee: 'Estimated Fee',
+          cancel: 'Cancel',
+          confirm: 'Confirm Transaction',
+          question: 'Should you confirm this transaction?',
+          warningTitle: '⚠️ Danger Signals',
+          correctAnswer: 'No',
+          incorrectAnswer: 'Yes',
+        }
+      },
+      transaction: {
+        timeLimit: 2,
+        deadline: '2024-12-31 23:59:59',
+        network: 'BNB Smart Chain',
+        walletAddressShort: '0xB890...aB1F',
+        senderShort: '0x1234...5678',
+        receiverShort: '0x9ABC...DEF0',
+        amount: '1000 SOLR',
+        token: 'SOLR',
+        approvalAmount: 'Unlimited (2^256-1)',
+        gasPrice: '5 Gwei',
+        gasLimit: '21000',
+        estimatedFee: '0.000105 BNB'
+      },
+      correctAnswer: 'no',
+      signals: {
+        chinese: [
+          'Never approve unlimited amount (2^256 - 1)',
+          'Only approve the exact amount you need',
+          'Regularly check and revoke old approvals',
+          'Beware of "free airdrop" baits',
+          'Carefully review contract call details'
+        ],
+        english: [
+          'Never approve unlimited amount (2^256 - 1)',
+          'Only approve the exact amount you need',
+          'Regularly check and revoke old approvals',
+          'Beware of "free airdrop" baits',
+          'Carefully review contract call details'
+        ]
+      },
+      tips: {
+        chinese: [
+          'Never approve unlimited amount (2^256 - 1)',
+          'Only approve the exact amount you need',
+          'Regularly check and revoke old approvals',
+          'Beware of "free airdrop" baits',
+          'Carefully review contract call details'
+        ],
+        english: [
+          'Never approve unlimited amount (2^256 - 1)',
+          'Only approve the exact amount you need',
+          'Regularly check and revoke old approvals',
+          'Beware of "free airdrop" baits',
+          'Carefully review contract call details'
+        ]
+      },
+      education: {
+        chinese: {
+          title: '什麼是授權陷阱？',
+          description: 'approve() 函數允許合約從您的錢包轉移代幣。無限授權意味著攻擊者可以隨時轉移您的所有代幣！',
+          tips: [
+            '永遠不要授權無限金額 (2^256 - 1)',
+            '只授權您需要的確切金額',
+            '定期檢查和撤銷舊的授權',
+            '警惕「免費空投」誘餌',
+            '仔細審查合約調用詳情'
+          ]
+        },
+        english: {
+          title: 'What is an Approval Trap?',
+          description: 'The approve() function allows a contract to transfer tokens from your wallet. Unlimited approval means attackers can transfer all your tokens at any time!',
+          tips: [
+            'Never approve unlimited amount (2^256 - 1)',
+            'Only approve the exact amount you need',
+            'Regularly check and revoke old approvals',
+            'Beware of "free airdrop" baits',
+            'Carefully review contract call details'
+          ]
+        }
+      }
+    }
+  },
+
+  // 釣魚郵件類型挑戰
+  phishing: {
+    // Level 2-4: 薦所直連 (Featured Access)
+    'level2-4': {
+      id: 'level2-4',
+      level: 2,
+      challengeNumber: 4,
+      type: 'phishing',
+      difficulty: 'medium',
+      
+      content: {
+        chinese: {
+          title: 'Level 2-4: 薦所直連',
+          subtitle: '依網紅直薦，啟用專屬交易通道。',
+          pageTitle: 'Level 2-4: Google 搜尋識別',
+          searchQuery: 'MetaMask 下載',
+          ad: '廣告',
+          officialTitle: 'MetaMask - 官方網站',
+          officialDesc: 'MetaMask 是一個加密錢包與閘道，讓你在瀏覽器中安全地儲存、傳送與接收 Ethereum 及其他代幣。僅從官方網站下載。',
+          onboardingTitle: "Let's get started",
+          onboardingSubtitle: '深受數百萬人信賴，MetaMask 是一款安全錢包，讓每個人都能進入 Web3 世界。',
+          createBtn: '建立新錢包',
+          passwordPlaceholder: '輸入密碼',
+          confirmPasswordPlaceholder: '確認密碼',
+          submitBtn: '創建錢包',
+          walletCreatedTitle: '錢包創建成功！',
+          addressLabel: '您的錢包地址：',
+          mnemonicLabel: '助記詞（請妥善保管）：',
+        },
+        english: {
+          title: 'Level 2-4: Featured Access',
+          subtitle: 'Activate your exclusive trading access through a creator\'s referral.',
+          pageTitle: 'Level 2-4: Google Search Recognition',
+          searchQuery: 'MetaMask download',
+          ad: 'Ad',
+          officialTitle: 'MetaMask - Official Website',
+          officialDesc: 'MetaMask is a crypto wallet and gateway that lets you securely store, send and receive Ethereum and other tokens in your browser. Download only from the official site.',
+          onboardingTitle: "Let's get started",
+          onboardingSubtitle: 'Trusted by millions, MetaMask is a secure wallet making the world of web3 accessible to all.',
+          createBtn: 'Create a new wallet',
+          passwordPlaceholder: 'Enter password',
+          confirmPasswordPlaceholder: 'Confirm password',
+          submitBtn: 'Create Wallet',
+          walletCreatedTitle: 'Wallet Created Successfully!',
+          addressLabel: 'Your Wallet Address:',
+          mnemonicLabel: 'Seed Phrase (Keep it safe):',
+        }
+      },
+      
+      // 固定的钱包信息
+      wallet: {
+        address: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+        mnemonic: 'ocean hidden verify unfair ripple master harvest bitter galaxy eternal badge mountain'
+      }
+    },
+    
+    // Level 1-1: 餌光誘許 (Baited Consent)
+    'level1-1': {
+      id: 'level1-1',
+      level: 1,
+      challengeNumber: 1,
+      type: 'phishing',
+      difficulty: 'easy',
+      
+      content: {
+        chinese: {
+          title: 'Level 1-1: 餌光誘許',
+          subtitle: '一紙虛贈，換得全權之許。',
+          airdropTitle: '恭喜！你已被抽中！',
+          airdropText: '免費獲得 1000 Solana (SOLR)',
+          network: 'BNB Smart Chain',
+          walletAddress: '0xB890...aB1F',
+          claimButton: '點擊領取 1000 Solana',
+          deadline: '領取截止時間',
+          hoursLeft: '小時',
+          metamaskTitle: 'MetaMask',
+          transactionConfirm: '交易確認',
+          sender: '發送者',
+          receiver: '接收者',
+          amount: '金額',
+          contractCall: '合約調用',
+          approveFunction: 'approve(address, amount)',
+          token: '代幣',
+          approvalAmount: '授權金額',
+          unlimited: '無限授權',
+          gasFee: 'Gas Fee',
+          gasPrice: 'Gas Price',
+          gasLimit: 'Gas Limit',
+          estimatedFee: '預估費用',
+          cancel: '取消',
+          confirm: '確認交易',
+          question: '你應該確認這筆交易嗎？',
+          warningTitle: '⚠️ 危險信號',
+          correctAnswer: '否',
+          incorrectAnswer: '是',
+        },
+        english: {
+          title: 'Level 1-1: Baited Consent',
+          subtitle: 'A phantom gift—in exchange for full consent.',
           airdropTitle: 'Congratulations! You have been selected!',
           airdropText: 'Claim 1000 Solana (SOLR) for FREE',
           network: 'BNB Smart Chain',
@@ -1480,26 +1942,26 @@ export const challengesConfig = {
         senderShort: '0x7f8e...6e7f',
         receiver: '0xB890a3f12e456789BcDef0123456789AbCdEfaB1F',
         receiverShort: '0xB890...aB1F',
-        amount: '0 BNB',
+        amount: '1000 SOLR',
         contractFunction: 'approve(address, amount)',
-        token: 'Solana (SOLR)',
-        approvalAmount: '2^256 - 1',
+        token: 'SOLR',
+        approvalAmount: 'Unlimited (2^256-1)',
         gasPrice: '5 Gwei',
         gasLimit: '100,000',
         estimatedFee: '0.0005 BNB',
-        timeLimit: 12 // 小时
+        timeLimit: 2 // 小时
       },
       
       // 正确答案
       correctAnswer: 'no', // 不应该确认交易
       
       // 危险信号
-      dangerSignals: {
+      signals: {
         chinese: [
           '🚨 無限授權 (2^256 - 1) - 極度危險！',
           '⚠️ 發送者是未知合約地址',
           '❗ 不需要支付 gas 卻要求授權',
-          '⏰ 製造時間壓力（12小時限制）',
+          '⏰ 製造時間壓力（2小時限制）',
           '🎁 免費空投誘餌',
           '🔒 approve 函數可以轉走你的所有代幣'
         ],
@@ -1507,7 +1969,7 @@ export const challengesConfig = {
           '🚨 Unlimited Approval (2^256 - 1) - Extremely Dangerous!',
           '⚠️ Sender is unknown contract address',
           '❗ No gas payment required but requesting approval',
-          '⏰ Creating time pressure (12-hour limit)',
+          '⏰ Creating time pressure (2-hour limit)',
           '🎁 Free airdrop bait',
           '🔒 approve function can transfer all your tokens'
         ]

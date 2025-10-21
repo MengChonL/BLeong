@@ -1,9 +1,9 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { getChallengeConfig } from '../config/challenges-config';
-import AddressPoisoningChallenge from '../components/challenges/AddressPoisoningChallenge';
-import PhishingChallenge from '../components/challenges/PhishingChallenge';
-import WalletTransferChallenge from '../components/challenges/WalletTransferChallenge';
+import Level2_1_AddressPoisoningChallenge from '../components/challenges/Level2-1_AddressPoisoningChallenge';
+import Level1_1_PhishingChallenge from '../components/challenges/Level1-1_PhishingChallenge';
+import Level1_2_WalletTransferChallenge from '../components/challenges/Level1-2_WalletTransferChallenge';
 import ApprovalTrapChallenge from '../components/challenges/ApprovalTrapChallenge';
 
 /**
@@ -42,12 +42,12 @@ const ChallengePage = () => {
     case 'addressPoisoning':
       // 根据模式选择不同的组件
       if (config.mode === 'wallet') {
-        return <WalletTransferChallenge config={config} />;
+        return <Level1_2_WalletTransferChallenge config={config} />;
       }
-      return <AddressPoisoningChallenge config={config} />;
+      return <Level2_1_AddressPoisoningChallenge config={config} />;
     
     case 'phishing':
-      return <PhishingChallenge config={config} />;
+      return <Level1_1_PhishingChallenge config={config} />;
     
     case 'approvalTrap':
       return <ApprovalTrapChallenge config={config} />;

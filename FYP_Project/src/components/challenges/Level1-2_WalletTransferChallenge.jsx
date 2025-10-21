@@ -1119,150 +1119,226 @@ const WalletTransferChallenge = ({ config }) => {
               </p>
             </div>
 
-            {/* 错误详情 */}
+            {/* 错误详情 - 像素风格设计 */}
             {!isCorrect && !isTimedOut && (
-              <div 
-                className="p-12 mb-12 text-left"
-                style={{
-                  backgroundColor: '#fef2f2',
-                  border: '1px solid #ffffff',
-                }}
-              >
-                <h4 className="text-lg font-bold mb-8" style={{ color: '#ef4444' }}>
-                  {common.incorrectExplanation}
-                </h4>
-                
-                <div className="space-y-6">
+              <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg overflow-hidden border-2 border-yellow-400 shadow-[0_0_10px_rgba(255,255,255,0.1)] pixel-font text-white">
+                {/* Error Banner */}
+                <div className="bg-red-700 text-white py-4 px-4 flex items-center justify-center gap-3">
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    <span className="text-2xl">❌</span>
+                  </div>
+                  <div className="text-center">
+                    <h2 className="text-xl md:text-2xl font-bold">轉帳失敗！</h2>
+                    <p className="text-xs md:text-sm opacity-90">請檢查以下項目：</p>
+                  </div>
+                </div>
+
+                {/* Error Details */}
+                <div className="p-4 space-y-3">
                   {/* 网络检查 */}
                   {config.transfer.requireNetworkSelection && (
-                    <div className="p-10" style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}>
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-bold" style={{ color: '#1a1a1a' }}>
+                    <div className={`flex items-start justify-between p-3 rounded border ${
+                      selectedNetwork === config.transfer.correctNetwork 
+                        ? 'bg-green-900 border-green-500' 
+                        : 'bg-red-900 border-red-500'
+                    }`}>
+                      <div>
+                        <h3 className={`font-bold ${
+                          selectedNetwork === config.transfer.correctNetwork 
+                            ? 'text-green-300' 
+                            : 'text-red-300'
+                        }`}>
                           {currentContent.networkLabel}
-                        </span>
-                        {selectedNetwork === config.transfer.correctNetwork ? (
-                          <span style={{ color: '#10b981' }}>{common.checkmark}</span>
-                        ) : (
-                          <span style={{ color: '#ef4444' }}>{common.crossmark}</span>
-                        )}
-                      </div>
-                      <div className="text-sm" style={{ color: '#64748b' }}>
-                        {common.selected}: {config.networks.find(n => n.id === selectedNetwork)?.name}
-                      </div>
-                      {selectedNetwork !== config.transfer.correctNetwork && (
-                        <div className="text-sm mt-2" style={{ color: '#059669' }}>
-                          {common.shouldBe}: {config.networks.find(n => n.id === config.transfer.correctNetwork)?.name}
+                        </h3>
+                        <div className="mt-1 text-xs text-gray-300">
+                          <span>你選擇的: <span className={
+                            selectedNetwork === config.transfer.correctNetwork 
+                              ? 'text-green-400' 
+                              : 'text-red-400'
+                          }>{config.networks.find(n => n.id === selectedNetwork)?.name}</span></span>
+                          {selectedNetwork !== config.transfer.correctNetwork && (
+                            <>
+                              <br />
+                              <span>應該選擇: <span className="text-green-400">{config.networks.find(n => n.id === config.transfer.correctNetwork)?.name}</span></span>
+                            </>
+                          )}
                         </div>
-                      )}
+                      </div>
+                      <div className="w-6 h-6 flex items-center justify-center">
+                        <span className={
+                          selectedNetwork === config.transfer.correctNetwork 
+                            ? 'text-green-400' 
+                            : 'text-red-400'
+                        }>
+                          {selectedNetwork === config.transfer.correctNetwork ? '✅' : '❌'}
+                        </span>
+                      </div>
                     </div>
                   )}
 
                   {/* 资产检查 */}
                   {config.transfer.requireAssetSelection && (
-                    <div className="p-10" style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}>
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-bold" style={{ color: '#1a1a1a' }}>
+                    <div className={`flex items-start justify-between p-3 rounded border ${
+                      selectedAsset === config.transfer.correctAsset 
+                        ? 'bg-green-900 border-green-500' 
+                        : 'bg-red-900 border-red-500'
+                    }`}>
+                      <div>
+                        <h3 className={`font-bold ${
+                          selectedAsset === config.transfer.correctAsset 
+                            ? 'text-green-300' 
+                            : 'text-red-300'
+                        }`}>
                           {currentContent.assetLabel}
-                        </span>
-                        {selectedAsset === config.transfer.correctAsset ? (
-                          <span style={{ color: '#10b981' }}>{common.checkmark}</span>
-                        ) : (
-                          <span style={{ color: '#ef4444' }}>{common.crossmark}</span>
-                        )}
-                      </div>
-                      <div className="text-sm" style={{ color: '#64748b' }}>
-                        {common.selected}: {config.assets.find(a => a.id === selectedAsset)?.symbol}
-                      </div>
-                      {selectedAsset !== config.transfer.correctAsset && (
-                        <div className="text-sm mt-2" style={{ color: '#059669' }}>
-                          {common.shouldBe}: {config.assets.find(a => a.id === config.transfer.correctAsset)?.symbol}
+                        </h3>
+                        <div className="mt-1 text-xs text-gray-300">
+                          <span>你選擇的: <span className={
+                            selectedAsset === config.transfer.correctAsset 
+                              ? 'text-green-400' 
+                              : 'text-red-400'
+                          }>{config.assets.find(a => a.id === selectedAsset)?.symbol}</span></span>
+                          {selectedAsset !== config.transfer.correctAsset && (
+                            <>
+                              <br />
+                              <span>應該選擇: <span className="text-green-400">{config.assets.find(a => a.id === config.transfer.correctAsset)?.symbol}</span></span>
+                            </>
+                          )}
                         </div>
-                      )}
+                      </div>
+                      <div className="w-6 h-6 flex items-center justify-center">
+                        <span className={
+                          selectedAsset === config.transfer.correctAsset 
+                            ? 'text-green-400' 
+                            : 'text-red-400'
+                        }>
+                          {selectedAsset === config.transfer.correctAsset ? '✅' : '❌'}
+                        </span>
+                      </div>
                     </div>
                   )}
 
                   {/* 地址检查 */}
-                  <div className="p-10" style={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb' }}>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-bold" style={{ color: '#1a1a1a' }}>
-                        {common.addressLabel}
+                  <div className={`flex items-start justify-between p-3 rounded border ${
+                    addressInput.trim().toLowerCase() === config.addresses.correct.toLowerCase() 
+                      ? 'bg-green-900 border-green-500' 
+                      : 'bg-red-900 border-red-500'
+                  }`}>
+                    <div>
+                      <h3 className={`font-bold ${
+                        addressInput.trim().toLowerCase() === config.addresses.correct.toLowerCase() 
+                          ? 'text-green-300' 
+                          : 'text-red-300'
+                      }`}>
+                        收款地址
+                      </h3>
+                      <div className="mt-1 text-xs text-gray-300">
+                        <span>你輸入的:</span>
+                        <div className="mt-1 text-xs bg-gray-700 p-1 rounded break-all">
+                          {addressInput || '未輸入'}
+                        </div>
+                        {addressInput.trim().toLowerCase() !== config.addresses.correct.toLowerCase() && (
+                          <div className="mt-2">
+                            <span>應該輸入: <span className="text-green-400">{config.addresses.correct}</span></span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="w-6 h-6 flex items-center justify-center">
+                      <span className={
+                        addressInput.trim().toLowerCase() === config.addresses.correct.toLowerCase() 
+                          ? 'text-green-400' 
+                          : 'text-red-400'
+                      }>
+                        {addressInput.trim().toLowerCase() === config.addresses.correct.toLowerCase() ? '✅' : '❌'}
                       </span>
-                      {addressInput.trim().toLowerCase() === config.addresses.correct.toLowerCase() ? (
-                        <span style={{ color: '#10b981' }}>{common.checkmark}</span>
-                      ) : (
-                        <span style={{ color: '#ef4444' }}>{common.crossmark}</span>
-                      )}
                     </div>
-                    <div className="text-xs mb-3" style={{ color: '#64748b' }}>
-                      {common.yourInput}:
-                    </div>
-                    <div className="font-mono text-sm break-all p-6 mb-4" style={{ 
-                      backgroundColor: '#fef2f2',
-                      color: '#dc2626',
-                      border: '1px solid #fca5a5'
-                    }}>
-                      {addressInput || common.empty}
-                    </div>
-                    {addressInput.trim().toLowerCase() !== config.addresses.correct.toLowerCase() && (
-                      <>
-                        <div className="text-xs mb-3" style={{ color: '#64748b' }}>
-                          {common.correctAddress}:
-                        </div>
-                        <div className="font-mono text-sm break-all p-6" style={{ 
-                          backgroundColor: '#f0fdf4',
-                          color: '#059669',
-                          border: '1px solid #86efac'
-                        }}>
-                          {config.addresses.correct}
-                        </div>
-                      </>
-                    )}
                   </div>
+
+                  {/* 金额检查 */}
+                  <div className={`flex items-start justify-between p-3 rounded border ${
+                    amountInput === config.transfer.amount 
+                      ? 'bg-green-900 border-green-500' 
+                      : 'bg-red-900 border-red-500'
+                  }`}>
+                    <div>
+                      <h3 className={`font-bold ${
+                        amountInput === config.transfer.amount 
+                          ? 'text-green-300' 
+                          : 'text-red-300'
+                      }`}>
+                        轉帳金額
+                      </h3>
+                      <div className="mt-1 text-xs text-gray-300">
+                        <span>你輸入的: <span className={
+                          amountInput === config.transfer.amount 
+                            ? 'text-green-400' 
+                            : 'text-red-400'
+                        }>{amountInput || '未輸入'} {config.transfer.currency}</span></span>
+                        {amountInput !== config.transfer.amount && (
+                          <>
+                            <br />
+                            <span>應該輸入: <span className="text-green-400">{config.transfer.amount} {config.transfer.currency}</span></span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="w-6 h-6 flex items-center justify-center">
+                      <span className={
+                        amountInput === config.transfer.amount 
+                          ? 'text-green-400' 
+                          : 'text-red-400'
+                      }>
+                        {amountInput === config.transfer.amount ? '✅' : '❌'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="px-4 pb-4 flex justify-center gap-3">
+                  <button 
+                    onClick={() => {
+                      setShowResult(false);
+                      setAddressInput('');
+                      setAmountInput('');
+                      setSelectedNetwork(config?.wallet?.defaultNetwork || 'ethereum');
+                      setSelectedAsset(config?.wallet?.defaultAsset || 'eth');
+                      setErrorMessage('');
+                      setIsTimedOut(false);
+                      setTimeRemaining(config?.timeLimit || null);
+                    }}
+                    className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold text-sm rounded border border-orange-400 shadow-[0_0_5px_rgba(255,165,0,0.5)] transition"
+                  >
+                    重試
+                  </button>
+                  <button 
+                    onClick={() => window.history.back()}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold text-sm rounded border border-green-400 shadow-[0_0_5px_rgba(0,255,0,0.5)] transition"
+                  >
+                    繼續
+                  </button>
                 </div>
               </div>
             )}
 
-            {/* 按钮 */}
-            <div className="flex gap-10 justify-center">
-              {!isCorrect && (
+            {/* 成功时的按钮 */}
+            {isCorrect && (
+              <div className="flex gap-10 justify-center">
                 <motion.button
-                  onClick={() => {
-                    setShowResult(false);
-                    setAddressInput('');
-                    setAmountInput('');
-                    setSelectedNetwork(config?.wallet?.defaultNetwork || 'ethereum');
-                    setSelectedAsset(config?.wallet?.defaultAsset || 'eth');
-                    setErrorMessage('');
-                    setIsTimedOut(false);
-                    setTimeRemaining(config?.timeLimit || null);
-                  }}
+                  onClick={() => window.history.back()}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="px-16 py-8 text-xl font-bold text-white"
                   style={{
-                    backgroundColor: '#f59e0b',
+                    backgroundColor: '#10b981',
                     border: 'none',
                     boxShadow: 'none',
                   }}
                 >
-                  {common.retryButton}
+                  {common.continueButton}
                 </motion.button>
-              )}
-              
-              <motion.button
-                onClick={() => window.history.back()}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-16 py-8 text-xl font-bold text-white"
-                style={{
-                  backgroundColor: '#10b981',
-                  border: 'none',
-                  boxShadow: 'none',
-                }}
-              >
-                {common.continueButton}
-              </motion.button>
-            </div>
+              </div>
+            )}
           </motion.div>
         )}
         </div>
