@@ -113,7 +113,7 @@ const GamePage = () => {
     1: [
       { id: 1, title: '餌光誘許', description: '一紙虛贈，換得全權之許。', completed: false },
       { id: 2, title: '獨徑無歧', description: '唯一之跡，無擾無疑', completed: false },
-      { id: 3, title: '避免點擊連結', description: '不要點擊可疑連結', completed: false },
+      { id: 3, title: '密語成局', description: '私言若棋，落子無回', completed: false },
       { id: 4, title: '眾跡分明', description: '多跡並行，各不相蒙', completed: false }
     ],
     2: [
@@ -148,6 +148,46 @@ const GamePage = () => {
     ]
   };
 
+  // 英文挑戰數據
+  const challengesEn = {
+    1: [
+      { id: 1, title: 'Baited Consent', description: 'A phantom gift—in exchange for full consent.', completed: false },
+      { id: 2, title: 'Single Path', description: 'One trace, no interference, no doubt', completed: false },
+      { id: 3, title: 'Whispered Moves', description: 'Words like pawns, once moved, cannot be taken back', completed: false },
+      { id: 4, title: 'Multiple Traces', description: 'Multiple traces, each distinct and clear', completed: false }
+    ],
+    2: [
+      { id: 1, title: 'Advanced Address Poisoning', description: 'Identify similar DeFi protocol addresses', completed: false },
+      { id: 2, title: 'Shadow Flow', description: 'Similar traces, quietly diverging', completed: false },
+      { id: 3, title: 'Smart Contract', description: 'Check contract code', completed: false },
+      { id: 4, title: 'Featured Access', description: 'Activate your exclusive trading access through a creator\'s referral.', completed: false }
+    ],
+    3: [
+      { id: 1, title: 'NFT Verification', description: 'Verify NFT authenticity', completed: false },
+      { id: 2, title: 'Dual Shadows', description: 'Two similar shadows, mixed among the crowd', completed: false },
+      { id: 3, title: 'Price Analysis', description: 'Analyze price rationality', completed: false },
+      { id: 4, title: 'Creator Verification', description: 'Verify creator identity', completed: false }
+    ],
+    4: [
+      { id: 1, title: 'DeFi Protocol', description: 'Understand DeFi protocols', completed: false },
+      { id: 2, title: 'Shape Confusion', description: 'Many similar shapes, true traces hidden among them', completed: false },
+      { id: 3, title: 'Yield Calculation', description: 'Calculate yield risks', completed: false },
+      { id: 4, title: 'Protocol Audit', description: 'Check protocol audits', completed: false }
+    ],
+    5: [
+      { id: 1, title: 'Token Analysis', description: 'Analyze token fundamentals', completed: false },
+      { id: 2, title: 'Micro Traces', description: 'True traces like dust, mixed among the noise', completed: false },
+      { id: 3, title: 'Market Sentiment', description: 'Analyze market sentiment', completed: false },
+      { id: 4, title: 'Risk Assessment', description: 'Assess investment risks', completed: false }
+    ],
+    6: [
+      { id: 1, title: 'Advanced Security', description: 'Implement advanced security measures', completed: false },
+      { id: 2, title: 'Time Limit', description: 'Truth and falsehood separated by a hair, time waits for no careful examination', completed: false },
+      { id: 3, title: 'Hardware Wallet', description: 'Use hardware wallet', completed: false },
+      { id: 4, title: 'Security Audit', description: 'Conduct security audit', completed: false }
+    ]
+  };
+
   const handleStartGame = () => {
     if (selectedLevel) {
       console.log('開始遊戲:', { selectedLevel });
@@ -164,6 +204,9 @@ const GamePage = () => {
       } else if (selectedChallengeIndex === 1) {
         // Level 1-2: 安全转账操作（地址投毒基础）
         navigate('/challenge/addressPoisoning/level1-2');
+      } else if (selectedChallengeIndex === 2) {
+        // Level 1-3: 聊天软件NFT诈骗
+        navigate('/challenge/chatNFT/level1-3');
       } else if (selectedChallengeIndex === 3) {
         // Level 1-4: 多条转账记录挑战
         navigate('/challenge/addressPoisoning/level1-4');
@@ -581,7 +624,7 @@ const GamePage = () => {
 
             {/* 挑戰列表 - 圓形設計 */}
             <div className="grid grid-cols-4 gap-20 mb-40">
-              {challenges[selectedLevel]?.map((challenge, index) => (
+              {(language === 'chinese' ? challenges[selectedLevel] : challengesEn[selectedLevel])?.map((challenge, index) => (
                 <div
                   key={challenge.id}
                   onClick={() => {
@@ -655,8 +698,8 @@ const GamePage = () => {
                 paddingBottom: '16px'
               }}>
                 {language === 'chinese' 
-                  ? '在這個關卡中，你將學習如何識別和防範Web3釣魚攻擊。完成所有挑戰來獲得安全知識點，提升你的防詐能力！'
-                  : 'In this level, you will learn how to identify and prevent Web3 phishing attacks. Complete all challenges to gain security knowledge points and improve your anti-fraud abilities!'
+                  ? '初階四問，皆關生死；看似尋常，實為根基。'
+                  : 'Four simple trials, yet each decides your fate. What seems mundane is the root of all defense.'
                 }
               </p>
             </div>

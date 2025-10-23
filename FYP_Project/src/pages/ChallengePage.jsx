@@ -4,7 +4,8 @@ import { getChallengeConfig } from '../config/challenges-config';
 import Level2_1_AddressPoisoningChallenge from '../components/challenges/Level2-1_AddressPoisoningChallenge';
 import Level1_1_PhishingChallenge from '../components/challenges/Level1-1_PhishingChallenge';
 import Level1_2_WalletTransferChallenge from '../components/challenges/Level1-2_WalletTransferChallenge';
-import ApprovalTrapChallenge from '../components/challenges/ApprovalTrapChallenge';
+import Level1_3_ChatNFTScam from '../components/challenges/Level1-3_ChatNFTScam';
+import Level2_4_GoogleSearchMetaMask from '../components/challenges/Level2-4_GoogleSearchMetaMask';
 
 /**
  * 通用挑战页面
@@ -16,7 +17,7 @@ const ChallengePage = () => {
   const { type, id } = useParams();
   
   // 从配置文件获取挑战数据
-  const config = getChallengeConfig(type, id);
+  const config = getChallengeConfig(id);
 
   // 如果找不到配置，显示错误
   if (!config) {
@@ -47,10 +48,15 @@ const ChallengePage = () => {
       return <Level2_1_AddressPoisoningChallenge config={config} />;
     
     case 'phishing':
+      // 根据挑战ID选择不同的组件
+      if (id === 'level2-4') {
+        return <Level2_4_GoogleSearchMetaMask config={config} />;
+      }
       return <Level1_1_PhishingChallenge config={config} />;
     
-    case 'approvalTrap':
-      return <ApprovalTrapChallenge config={config} />;
+    case 'chatNFT':
+      return <Level1_3_ChatNFTScam config={config} />;
+    
     
     default:
       return (

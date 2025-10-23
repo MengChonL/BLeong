@@ -20,7 +20,7 @@ const GoogleSearchMetaMask = () => {
   const [showConnectQuestion, setShowConnectQuestion] = useState(true);
   
   // 从配置文件获取数据
-  const config = getChallengeConfig('phishing', 'level2-4');
+  const config = getChallengeConfig('level2-4');
   
   if (!config) {
     return <div className="text-white text-center p-8">配置未找到</div>;

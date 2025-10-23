@@ -25,7 +25,7 @@
 
 | 文件名 | 状态 | 说明 |
 |--------|------|------|
-| `ApprovalTrapChallenge.jsx` | 可删除 | 已合并到 `Level1-1_PhishingChallenge.jsx` |
+| `ApprovalTrapChallenge.jsx` | 已删除 | 已合并到 `Level1-1_PhishingChallenge.jsx` |
 
 ## 路由配置
 

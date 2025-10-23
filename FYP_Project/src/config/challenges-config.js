@@ -1525,7 +1525,7 @@ export const challengesConfig = {
             to: '0x8f3C2a5E7d9B4c1A6e8F5D3B2a7C9E1f4A6B8D2e',
             fromName: 'Alice',
             toName: 'Alice',
-            timeAgo: { chinese: '1 分钟前', english: '1 minute ago' },
+            timeAgo: { chinese: '1 分鐘前', english: '1 minute ago' },
             status: 'success'
           },
           // 第2条：给 Alice 的 3000 USDT 转账
@@ -1536,7 +1536,7 @@ export const challengesConfig = {
             network: 'ethereum',
             to: '0x8f3C2a5E7d9B4c1A6e8F5D3B2a7C9E1f4A6B8D2e',
             toName: 'Alice',
-            timeAgo: { chinese: '2 分钟前', english: '2 minutes ago' },
+            timeAgo: { chinese: '2 分鐘前', english: '2 minutes ago' },
             status: 'success'
           },
           // 第3条：投毒地址1 - 收款
@@ -1549,7 +1549,7 @@ export const challengesConfig = {
             to: '0x742d35Cc6634C0532967a3b844Bc454e4438f44e',
             fromName: 'Ben',
             toName: 'Ben',
-            timeAgo: { chinese: '5 分钟前', english: '5 minutes ago' },
+            timeAgo: { chinese: '5 分鐘前', english: '5 minutes ago' },
             status: 'success'
           },
           // 第4条：其他交易
@@ -1560,7 +1560,7 @@ export const challengesConfig = {
             network: 'ethereum',
             to: '0x3A9D5f7E2c1B8a4F6d3E9c7A5b2F8e1D4c6A9B7f',
             toName: 'Charlie',
-            timeAgo: { chinese: '10 分钟前', english: '10 minutes ago' },
+            timeAgo: { chinese: '10 分鐘前', english: '10 minutes ago' },
             status: 'success'
           },
           // 第5条：投毒地址 - 收款（第一页最后一条）
@@ -1573,7 +1573,7 @@ export const challengesConfig = {
             to: '0x742d35Cc6634C0532967a3b844Bc454e4438f44e',
             fromName: 'Ben',
             toName: 'Ben',
-            timeAgo: { chinese: '15 分钟前', english: '15 minutes ago' },
+            timeAgo: { chinese: '15 分鐘前', english: '15 minutes ago' },
             status: 'success'
           },
           // 第6条：投毒地址2 - 收款（第二页）
@@ -1586,7 +1586,7 @@ export const challengesConfig = {
             to: '0x742d35Cc6634C0532967a3b844Bc454e4438f44e',
             fromName: 'Ben',
             toName: 'Ben',
-            timeAgo: { chinese: '30 分钟前', english: '30 minutes ago' },
+            timeAgo: { chinese: '30 分鐘前', english: '30 minutes ago' },
             status: 'success'
           },
           // 第7条：其他交易
@@ -1597,7 +1597,7 @@ export const challengesConfig = {
             network: 'ethereum',
             to: '0xE6b4C2f8A1d9B7e3F5c8A2d6E9b1F4a7C3e8D5b2',
             toName: 'David',
-            timeAgo: { chinese: '1 小时前', english: '1 hour ago' },
+            timeAgo: { chinese: '1 小時前', english: '1 hour ago' },
             status: 'success'
           },
           // 第8条：其他交易
@@ -1610,7 +1610,7 @@ export const challengesConfig = {
             to: '0x1234567890abcdef1234567890abcdef12345678',
             fromName: 'Emma',
             toName: 'Emma',
-            timeAgo: { chinese: '2 小时前', english: '2 hours ago' },
+            timeAgo: { chinese: '2 小時前', english: '2 hours ago' },
             status: 'success'
           },
           // 第9条：正确地址 - 收款（第二页）
@@ -1623,7 +1623,7 @@ export const challengesConfig = {
             to: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
             fromName: 'Ben',
             toName: 'Ben',
-            timeAgo: { chinese: '3 小时前', english: '3 hours ago' },
+            timeAgo: { chinese: '3 小時前', english: '3 hours ago' },
             status: 'success'
           },
           // 第10条：其他交易
@@ -1634,7 +1634,7 @@ export const challengesConfig = {
             network: 'ethereum',
             to: '0x9876543210fedcba9876543210fedcba98765432',
             toName: 'Frank',
-            timeAgo: { chinese: '5 小时前', english: '5 hours ago' },
+            timeAgo: { chinese: '5 小時前', english: '5 hours ago' },
             status: 'success'
           }
         ]
@@ -1804,8 +1804,128 @@ export const challengesConfig = {
     }
   },
 
+  // 聊天軟件NFT詐騙挑戰
+  chatNFT: {
+    // Level 1-3: 聊天軟件NFT詐騙
+    'level1-3': {
+      id: 'level1-3',
+      level: 1,
+      challengeNumber: 3,
+      type: 'chatNFT',
+      difficulty: 'easy',
+      
+      content: {
+        chinese: {
+          title: 'Level 1-3: 密語成局',
+          subtitle: '私言若棋，落子無回',
+          friendMessage1: '嗨！最近怎麼樣？',
+          friendMessage2: '我發個有趣的影片給你看看',
+          friendMessage3: '笑死',
+          friendMessage4: '哈哈，這個真的很好笑',
+          friendMessage5: '對了，最近有沒有留意NFT交易？',
+          friendMessage6: '我在網上看到一個Discord和X上都在討論的NFT項目',
+          friendMessage7: '看起來很有潛力，你有興趣嗎？',
+          friendMessage8: '我發個影片給你看看',
+          friendMessage9: '這個項目真的很火，很多人都在買',
+          friendMessage10: '我發給你看看',
+          nftLink: 'https://www.openSea.ioo/?id=123',
+          question: '你覺得這個NFT鏈接安全嗎？',
+          correctAnswer: '不安全',
+          incorrectAnswer: '安全',
+          warningTitle: '危險信號',
+          education: {
+            title: 'NFT詐騙識別指南',
+            description: '聊天軟件中的NFT詐騙通常通過朋友推薦來增加可信度，但實際上可能是詐騙。',
+            tips: [
+              '永遠不要點擊來歷不明的NFT鏈接',
+              '即使是朋友推薦，也要先驗證項目的真實性',
+              '真正的NFT項目通常有官方網站和社交媒體',
+              '如果朋友突然推薦NFT項目，要特別小心',
+              '在點擊任何鏈接前，先與朋友確認'
+            ]
+          }
+        },
+        english: {
+          title: 'Level 1-3: Whispered Moves',
+          subtitle: 'Words like pawns, once moved, cannot be taken back',
+          friendMessage1: 'Hey! How are you doing?',
+          friendMessage2: 'Let me send you a funny video',
+          friendMessage3: 'LOL',
+          friendMessage4: 'Haha, this is really funny',
+          friendMessage5: 'By the way, I know you\'ve been playing with NFTs and getting good returns',
+          friendMessage6: 'I saw an NFT project being discussed on Discord and X',
+          friendMessage7: 'It looks promising, are you interested?',
+          friendMessage8: 'Let me send you a video about it',
+          friendMessage9: 'This project is really hot, lots of people are buying',
+          friendMessage10: 'Let me send you the link',
+          nftLink: 'http://www.openSea.ioo/?id=123',
+          question: 'Do you think this NFT link is safe?',
+          correctAnswer: 'Not safe',
+          incorrectAnswer: 'Safe',
+          warningTitle: 'Danger Signals',
+          education: {
+            title: 'NFT Scam Identification Guide',
+            description: 'NFT scams in chat apps often use friend recommendations to increase credibility, but they may actually be scams.',
+            tips: [
+              'Never click on unknown NFT links',
+              'Even if recommended by friends, verify the project\'s authenticity first',
+              'Legitimate NFT projects usually have official websites and social media',
+              'Be extra careful if friends suddenly recommend NFT projects',
+              'Always confirm with friends before clicking any links'
+            ]
+          }
+        }
+      },
+      
+      signals: {
+        chinese: [
+          '朋友突然推薦NFT項目',
+          '鏈接看起來可疑（非官方域名）',
+          '聲稱是「獨家」或「限時」機會',
+          '要求立即行動，製造緊迫感',
+          '沒有提供項目的官方信息'
+        ],
+        english: [
+          'Friend suddenly recommends NFT project',
+          'Suspicious-looking link (non-official domain)',
+          'Claims to be "exclusive" or "limited time" opportunity',
+          'Creates urgency requiring immediate action',
+          'No official project information provided'
+        ]
+      },
+      
+      education: {
+        chinese: {
+          title: 'NFT詐騙識別指南',
+          description: '聊天軟件中的NFT詐騙通常通過朋友推薦來增加可信度，但實際上可能是詐騙。',
+          tips: [
+            '永遠不要點擊來歷不明的NFT鏈接',
+            '即使是朋友推薦，也要先驗證項目的真實性',
+            '真正的NFT項目通常有官方網站和社交媒體',
+            '如果朋友突然推薦NFT項目，要特別小心',
+            '在點擊任何鏈接前，先與朋友確認'
+          ]
+        },
+        english: {
+          title: 'NFT Scam Identification Guide',
+          description: 'NFT scams in chat apps often use friend recommendations to increase credibility, but they may actually be scams.',
+          tips: [
+            'Never click on unknown NFT links',
+            'Even if recommended by friends, verify the project\'s authenticity first',
+            'Legitimate NFT projects usually have official websites and social media',
+            'Be extra careful if friends suddenly recommend NFT projects',
+            'Always confirm with friends before clicking any links'
+          ]
+        }
+      },
+      
+      correctAnswer: 'no'
+    }
+  },
+
   // 釣魚郵件類型挑戰
   phishing: {
+    
     // Level 2-4: 薦所直連 (Featured Access)
     'level2-4': {
       id: 'level2-4',
@@ -2006,12 +2126,17 @@ export const challengesConfig = {
 
 /**
  * 根据挑战ID获取挑战配置
- * @param {string} type - 挑战类型 (addressPoisoning, phishing, etc.)
  * @param {string} id - 挑战ID (level1-2, level2-1, etc.)
  * @returns {object} 挑战配置对象
  */
-export const getChallengeConfig = (type, id) => {
-  return challengesConfig[type]?.[id] || null;
+export const getChallengeConfig = (id) => {
+  // 遍历所有类型查找匹配的挑战
+  for (const type in challengesConfig) {
+    if (challengesConfig[type][id]) {
+      return challengesConfig[type][id];
+    }
+  }
+  return null;
 };
 
 /**
