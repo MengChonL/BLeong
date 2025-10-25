@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ChallengeTemplate from './ChallengeTemplate';
 import BrowserFrame from './BrowserFrame';
+import ChallengeResultScreen from './ChallengeResultScreen';
 // 导入图标
 import SolanaIcon from '../../assets/Solana.png';
 import BNBIcon from '../../assets/BNB.png';
@@ -346,17 +347,19 @@ const PhishingChallenge = ({ config }) => {
       <BrowserFrame url="http://solaraairdrop.io">
         <div
           style={{
-            backgroundColor: '#ffffff',
-            padding: '40px',
+            backgroundColor: showResult ? 'transparent' : '#ffffff',
+            padding: showResult ? '0' : '40px',
             color: '#1a1a1a',
             minHeight: '80vh',
             fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
           }}
         >
           {/* 标题 */}
-          <h1 className="text-4xl font-bold mb-8 text-center" style={{ color: '#1a1a1a' }}>
-            {currentContent.title}
-          </h1>
+          {!showResult && (
+            <h1 className="text-4xl font-bold mb-8 text-center" style={{ color: '#1a1a1a' }}>
+              {currentContent.title}
+            </h1>
+          )}
 
           {!showResult ? (
             <div className="grid grid-cols-2 gap-16 mb-64">
@@ -713,86 +716,96 @@ const PhishingChallenge = ({ config }) => {
 
           {/* 结果显示 */}
           {showResult && (
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="text-center"
-            >
-              <div
-                className="p-12 mb-8"
-                style={{
-                  backgroundColor: isCorrect ? '#10b981' : '#ef4444',
-                  border: 'none',
-                  borderRadius: '12px'
-                }}
-              >
-                <div className="text-7xl mb-6">
-                  {isCorrect ? '✓' : '✗'}
-                </div>
-                <p className="text-4xl font-bold text-white mb-4">
-                  {isCorrect ? '恭喜！答對了！' : '答錯了！'}
-                </p>
-                <p className="text-xl text-white">
-                  {isCorrect 
-                    ? '你成功識別了授權陷阱！永遠不要授權無限額度給未知合約。'
-                    : '這是一個授權陷阱！無限授權會讓攻擊者轉走你所有的代幣。'
-                  }
-                </p>
-              </div>
-
-              {/* 危险信号 */}
-              <div className="p-8 mb-8 text-left" style={{ backgroundColor: '#fef2f2', border: '2px solid #ef4444' }}>
-                <h3 className="text-2xl font-bold mb-4" style={{ color: '#dc2626' }}>
-                  {currentContent.warningTitle}
-                </h3>
-                <ul className="space-y-3">
-                  {dangerSignals.map((signal, index) => (
-                    <li key={index} className="text-lg" style={{ color: '#991b1b' }}>
+            <ChallengeResultScreen
+              isSuccess={isCorrect}
+              title={language === 'chinese' ? '授權陷阱識別' : 'Authorization Trap Detection'}
+              description={isCorrect 
+                ? (language === 'chinese' ? '你成功識別了授權陷阱！永遠不要授權無限額度給未知合約。' : 'You successfully identified the authorization trap! Never approve unlimited amounts to unknown contracts.')
+                : (language === 'chinese' ? '這是一個授權陷阱！無限授權會讓攻擊者轉走你所有的代幣。' : 'This is an authorization trap! Unlimited approval allows attackers to steal all your tokens.')
+              }
+              successMessage={language === 'chinese' ? '恭喜！答對了！' : 'Congratulations! Correct!'}
+              failureMessage={language === 'chinese' ? '答錯了！' : 'Wrong Answer!'}
+              successExplanation={language === 'chinese' 
+                ? '你成功識別了授權陷阱！永遠不要授權無限額度給未知合約。' 
+                : 'You successfully identified the authorization trap! Never approve unlimited amounts to unknown contracts.'
+              }
+              failureExplanation={language === 'chinese' ? '請檢查以下危險信號：' : 'Check the following danger signals:'}
+              successSubtitle={language === 'chinese' ? '恭喜完成任務' : 'Congratulations on completing the task'}
+              retryButtonText={language === 'chinese' ? '重試' : 'Retry'}
+              checkItems={isCorrect ? [
+                // 成功时显示正确的判断
+                {
+                  label: language === 'chinese' ? '合約授權判斷' : 'Contract Approval Decision',
+                  value: language === 'chinese' ? '正確拒絕' : 'Correctly Rejected',
+                  isCorrect: true,
+                  showValue: true
+                },
+                {
+                  label: language === 'chinese' ? '無限授權識別' : 'Unlimited Approval Recognition',
+                  value: language === 'chinese' ? '成功識別風險' : 'Risk Identified',
+                  isCorrect: true,
+                  showValue: true
+                },
+                {
+                  label: language === 'chinese' ? '安全意識' : 'Security Awareness',
+                  value: language === 'chinese' ? '保護資產安全' : 'Assets Protected',
+                  isCorrect: true,
+                  showValue: true
+                },
+                ...(education ? [{
+                  label: language === 'chinese' ? '安全知識' : 'Security Knowledge',
+                  value: education.title,
+                  isCorrect: true,
+                  showValue: true,
+                  details: education.tips ? (
+                    <div className="mt-2 space-y-2">
+                      <p className="text-gray-300 text-sm mb-3">{education.description}</p>
+                      {education.tips.map((tip, index) => (
+                        <div key={index} className="text-sm text-gray-300 flex items-start gap-2">
+                          <span className="text-green-400">•</span>
+                          <span>{tip}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null
+                }] : [])
+              ] : [
+                // 失败时显示危险信号
+                ...dangerSignals.map((signal, index) => ({
+                  label: `${language === 'chinese' ? '危險信號' : 'Danger Signal'} ${index + 1}`,
+                  value: signal,
+                  isCorrect: false,
+                  showValue: false,
+                  details: (
+                    <div className="text-sm text-gray-300">
                       {signal}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* 教育内容 */}
-              {education && (
-                <div className="p-8 text-left" style={{ backgroundColor: '#f0f9ff', border: '2px solid #3b82f6' }}>
-                  <h3 className="text-2xl font-bold mb-4" style={{ color: '#1e40af' }}>
-                    {education.title}
-                  </h3>
-                  <p className="text-lg mb-6" style={{ color: '#1e3a8a' }}>
-                    {education.description}
-                  </p>
-                  <h4 className="text-xl font-bold mb-3" style={{ color: '#1e40af' }}>
-                    安全提示：
-                  </h4>
-                  <ul className="space-y-2">
-                    {education.tips?.map((tip, index) => (
-                      <li key={index} className="text-lg flex items-start gap-2" style={{ color: '#1e3a8a' }}>
-                        <span>•</span>
-                        <span>{tip}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* 继续按钮 */}
-              <motion.button
-                onClick={() => window.history.back()}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="mt-8 px-12 py-4 text-xl font-bold text-white"
-                style={{
-                  backgroundColor: '#3b82f6',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer'
-                }}
-              >
-                返回遊戲
-              </motion.button>
-            </motion.div>
+                    </div>
+                  )
+                })),
+                ...(education ? [{
+                  label: education.title,
+                  value: '',
+                  isCorrect: false,
+                  showValue: false,
+                  details: (
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-300 mb-3">{education.description}</p>
+                      {education.tips?.map((tip, index) => (
+                        <div key={index} className="text-sm text-gray-300 flex items-start gap-2">
+                          <span className="text-yellow-400">•</span>
+                          <span>{tip}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )
+                }] : [])
+              ]}
+              onRetry={!isCorrect ? () => {
+                setShowResult(false);
+                setSelectedAnswer(null);
+                setIsCorrect(false);
+              } : null}
+            />
           )}
         </div>
       </BrowserFrame>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import ChallengeTemplate from './ChallengeTemplate';
+import ChallengeResultScreen from './ChallengeResultScreen';
 
 /**
  * 通用地址投毒挑战组件
@@ -296,144 +297,141 @@ const AddressPoisoningChallenge = ({ config }) => {
 
         {/* 结果显示 */}
         {showResult && (
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="text-center"
-          >
-            <div 
-              className="p-8 rounded-lg mb-6"
-              style={{
-                backgroundColor: isCorrect ? '#10b981' : '#ef4444',
-                border: '4px solid #000000',
-                boxShadow: '6px 6px 0px #000000'
-              }}
-            >
-              <div className="text-6xl mb-4">
-                {isCorrect ? '✓' : '✗'}
-              </div>
-              <p 
-                className="text-3xl font-bold text-white mb-4"
-                style={{ 
-                  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                }}
-              >
-                {isCorrect ? common.correct : common.incorrect}
-              </p>
-              <p 
-                className="text-xl"
-                style={{ 
-                  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                  lineHeight: '1.6',
-                  color: '#ffffff'
-                }}
-              >
-                {isCorrect ? common.explanation : common.errorExplanation}
-              </p>
-            </div>
-
-            {/* 地址对比 */}
-            <div 
-              className="p-6 rounded-lg mb-6 text-left"
-              style={{
-                backgroundColor: '#2d2d2d',
-                border: '3px solid #374151',
-              }}
-            >
-              <h4 className="text-lg font-bold mb-4" style={{ color: '#22d3ee' }}>
-                {common.addressComparison}
-              </h4>
-              
-              <div className="space-y-4">
-                <div>
-                  <div className="text-sm mb-2" style={{ color: '#10b981' }}>
-                    ✓ {common.correctAddress} ({config.recipient.username})
+          <ChallengeResultScreen
+            isSuccess={isCorrect}
+            title={currentContent.scenario}
+            description={currentContent.scenarioText}
+            successMessage={common.correct}
+            failureMessage={common.incorrect}
+            successExplanation={common.explanation}
+            failureExplanation={common.errorExplanation}
+            successSubtitle={language === 'chinese' ? '恭喜完成任務' : 'Congratulations on completing the task'}
+            retryButtonText={common.retryButton}
+            checkItems={isCorrect ? [
+              // 成功时的检查项
+              {
+                label: language === 'chinese' ? '地址選擇' : 'Address Selection',
+                value: language === 'chinese' ? '正確地址' : 'Correct Address',
+                isCorrect: true,
+                showValue: true
+              },
+              {
+                label: language === 'chinese' ? '地址驗證' : 'Address Verification',
+                value: language === 'chinese' ? '完整核對' : 'Fully Verified',
+                isCorrect: true,
+                showValue: true
+              },
+              {
+                label: common.addressComparison,
+                value: '',
+                isCorrect: true,
+                showValue: false,
+                details: (
+                  <div className="space-y-3">
+                    <div>
+                      <div className="text-sm mb-2 text-green-400">
+                        ✓ {common.correctAddress} ({config.recipient.username})
+                      </div>
+                      <div className="font-mono text-xs break-all p-2 rounded bg-gray-800/50 border border-green-700 text-green-400">
+                        {config.addresses.correct}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm mb-2 text-red-400">
+                        ✗ {common.poisonedAddress}
+                      </div>
+                      <div className="font-mono text-xs break-all p-2 rounded bg-gray-800/50 border border-red-700 text-red-400">
+                        {config.addresses.poisoned}
+                      </div>
+                    </div>
+                    <div className="text-sm text-yellow-400">
+                      ⚠️ {common.comparisonWarning}
+                    </div>
                   </div>
-                  <div className="font-mono text-sm break-all p-3 rounded" style={{ 
-                    backgroundColor: '#1f2937',
-                    color: '#10b981',
-                    border: '2px solid #10b981'
-                  }}>
-                    {config.addresses.correct}
+                )
+              },
+              {
+                label: common.tip,
+                value: '',
+                isCorrect: true,
+                showValue: false,
+                details: (
+                  <div className="space-y-2">
+                    {common.tips.map((tip, index) => (
+                      <div key={index} className="text-sm text-gray-300 flex items-start gap-2">
+                        <span className="text-green-400">✓</span>
+                        <span>{tip}</span>
+                      </div>
+                    ))}
                   </div>
-                </div>
-                
-                <div>
-                  <div className="text-sm mb-2" style={{ color: '#ef4444' }}>
-                    ✗ {common.poisonedAddress}
+                )
+              }
+            ] : [
+              // 失败时的检查项
+              {
+                label: language === 'chinese' ? '錯誤地址' : 'Wrong Address',
+                value: language === 'chinese' ? '投毒地址' : 'Poisoned Address',
+                isCorrect: false,
+                showValue: false,
+                details: (
+                  <div className="text-sm text-gray-300">
+                    {language === 'chinese' 
+                      ? '你選擇了投毒地址！攻擊者故意使用與真實地址前後幾位相同的地址。' 
+                      : 'You selected a poisoned address! Attackers deliberately use addresses with similar beginning and ending characters.'}
                   </div>
-                  <div className="font-mono text-sm break-all p-3 rounded" style={{ 
-                    backgroundColor: '#1f2937',
-                    color: '#ef4444',
-                    border: '2px solid #ef4444'
-                  }}>
-                    {config.addresses.poisoned}
+                )
+              },
+              {
+                label: common.addressComparison,
+                value: '',
+                isCorrect: false,
+                showValue: false,
+                details: (
+                  <div className="space-y-3">
+                    <div>
+                      <div className="text-sm mb-2 text-green-400">
+                        ✓ {common.correctAddress} ({config.recipient.username})
+                      </div>
+                      <div className="font-mono text-xs break-all p-2 rounded bg-gray-800/50 border border-green-700 text-green-400">
+                        {config.addresses.correct}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm mb-2 text-red-400">
+                        ✗ {common.poisonedAddress}
+                      </div>
+                      <div className="font-mono text-xs break-all p-2 rounded bg-gray-800/50 border border-red-700 text-red-400">
+                        {config.addresses.poisoned}
+                      </div>
+                    </div>
+                    <div className="text-sm text-yellow-400">
+                      ⚠️ {common.comparisonWarning}
+                    </div>
                   </div>
-                </div>
-                
-                <div className="text-sm" style={{ color: '#fbbf24' }}>
-                  ⚠️ {common.comparisonWarning}
-                </div>
-              </div>
-            </div>
-
-            {/* 安全提示 */}
-            <div 
-              className="p-6 rounded-lg text-left mb-6"
-              style={{
-                backgroundColor: '#2d2d2d',
-                border: '3px solid #fbbf24',
-              }}
-            >
-              <h4 className="text-xl font-bold mb-4" style={{ color: '#fbbf24' }}>
-                {common.tip}
-              </h4>
-              <ul className="space-y-2">
-                {common.tips.map((tip, index) => (
-                  <li key={index} className="flex items-start" style={{ color: '#d1d5db' }}>
-                    <span className="mr-2" style={{ color: '#10b981' }}>✓</span>
-                    <span>{tip}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* 按钮 */}
-            <div className="flex gap-4 justify-center">
-              {!isCorrect && (
-                <motion.button
-                  onClick={() => {
-                    setShowResult(false);
-                    setSelectedAddress(null);
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 text-xl font-bold text-white rounded-lg"
-                  style={{
-                    backgroundColor: '#f59e0b',
-                    border: '4px solid #000000',
-                    boxShadow: '4px 4px 0px #000000',
-                  }}
-                >
-                  {common.retryButton}
-                </motion.button>
-              )}
-              
-              <motion.button
-                onClick={() => window.history.back()}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 text-xl font-bold text-white rounded-lg"
-                style={{
-                  backgroundColor: '#10b981',
-                  border: '4px solid #000000',
-                  boxShadow: '4px 4px 0px #000000',
-                }}
-              >
-                {common.continueButton}
-              </motion.button>
-            </div>
-          </motion.div>
+                )
+              },
+              {
+                label: common.tip,
+                value: '',
+                isCorrect: false,
+                showValue: false,
+                details: (
+                  <div className="space-y-2">
+                    {common.tips.map((tip, index) => (
+                      <div key={index} className="text-sm text-gray-300 flex items-start gap-2">
+                        <span className="text-yellow-400">•</span>
+                        <span>{tip}</span>
+                      </div>
+                    ))}
+                  </div>
+                )
+              }
+            ]}
+            onRetry={!isCorrect ? () => {
+              setShowResult(false);
+              setSelectedAddress(null);
+            } : null}
+          />
         )}
       </div>
     </ChallengeTemplate>

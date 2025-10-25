@@ -1747,27 +1747,29 @@ export const challengesConfig = {
       correctAnswer: 'no',
       signals: {
         chinese: [
-          'Never approve unlimited amount (2^256 - 1)',
-          'Only approve the exact amount you need',
-          'Regularly check and revoke old approvals',
-          'Beware of "free airdrop" baits',
-          'Carefully review contract call details'
+          '🚨 無限授權 (2^256 - 1) - 極度危險！',
+          '⚠️ 發送者是未知合約地址',
+          '❗ 不需要支付 gas 卻要求授權',
+          '⏰ 製造時間壓力（2小時限制）',
+          '🎁 免費空投誘餌',
+          '🔒 approve 函數可以轉走你的所有代幣'
         ],
         english: [
-          'Never approve unlimited amount (2^256 - 1)',
-          'Only approve the exact amount you need',
-          'Regularly check and revoke old approvals',
-          'Beware of "free airdrop" baits',
-          'Carefully review contract call details'
+          '🚨 Unlimited Approval (2^256 - 1) - Extremely Dangerous!',
+          '⚠️ Sender is unknown contract address',
+          '❗ No gas payment required but requesting approval',
+          '⏰ Creating time pressure (2-hour limit)',
+          '🎁 Free airdrop bait',
+          '🔒 approve function can transfer all your tokens'
         ]
       },
       tips: {
         chinese: [
-          'Never approve unlimited amount (2^256 - 1)',
-          'Only approve the exact amount you need',
-          'Regularly check and revoke old approvals',
-          'Beware of "free airdrop" baits',
-          'Carefully review contract call details'
+          '永遠不要授權無限額度（2^256 - 1）',
+          '只授權你需要的確切數量',
+          '定期檢查並撤銷舊的授權',
+          '警惕「免費空投」誘餌',
+          '仔細查看合約調用詳情'
         ],
         english: [
           'Never approve unlimited amount (2^256 - 1)',

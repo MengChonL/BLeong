@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ChallengeTemplate from './ChallengeTemplate';
 import BrowserFrame from './BrowserFrame';
+import ChallengeResultScreen from './ChallengeResultScreen';
 import { getChallengeConfig } from '../../config/challenges-config';
 import icon1 from '../../assets/icon1.png';
 import icon2 from '../../assets/icon2.png';
@@ -21,6 +22,9 @@ const ChatNFTScam = () => {
   const [showContract, setShowContract] = useState(false);
   const [showNFTWebsite, setShowNFTWebsite] = useState(false);
   const [config, setConfig] = useState(null);
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
 
   // 获取配置
   useEffect(() => {
@@ -360,29 +364,37 @@ const ChatNFTScam = () => {
           </div>
         </div>
 
-        {/* 按钮 - 装饰性 */}
+        {/* 按钮 */}
         <div className="flex gap-3">
           <button
-            className="flex-1 py-3 text-white font-bold text-sm"
+            onClick={() => {
+              setSelectedAnswer('no');
+              setIsCorrect(true);
+              setShowResult(true);
+            }}
+            className="flex-1 py-3 text-white font-bold text-sm transition-all hover:bg-gray-700"
             style={{
               backgroundColor: '#6b7280',
               border: 'none',
               borderRadius: '8px',
-              cursor: 'not-allowed'
+              cursor: 'pointer'
             }}
-            disabled
           >
             {language === 'chinese' ? '拒絕' : 'Reject'}
           </button>
           <button
-            className="flex-1 py-3 text-white font-bold text-sm"
+            onClick={() => {
+              setSelectedAnswer('yes');
+              setIsCorrect(false);
+              setShowResult(true);
+            }}
+            className="flex-1 py-3 text-white font-bold text-sm transition-all hover:bg-red-600"
             style={{
               backgroundColor: '#ef4444',
               border: 'none',
               borderRadius: '8px',
-              cursor: 'not-allowed'
+              cursor: 'pointer'
             }}
-            disabled
           >
             {language === 'chinese' ? '確認' : 'Confirm'}
           </button>
@@ -612,7 +624,102 @@ const ChatNFTScam = () => {
           }}
         >
           <div className="h-full flex flex-col">
-        {showContract ? (
+        {showResult ? (
+          <ChallengeResultScreen
+            isSuccess={isCorrect}
+            title={language === 'chinese' ? 'NFT 詐騙識別' : 'NFT Scam Detection'}
+            description={language === 'chinese' 
+              ? '識別聊天軟件中的 NFT 詐騙鏈接和惡意合約' 
+              : 'Identify NFT scam links and malicious contracts in chat applications'
+            }
+            successMessage={language === 'chinese' ? '恭喜！答對了！' : 'Congratulations! Correct!'}
+            failureMessage={language === 'chinese' ? '答錯了！' : 'Wrong Answer!'}
+            successExplanation={language === 'chinese' 
+              ? '你成功識別了 NFT 詐騙！永遠不要在未驗證的網站上進行交易。' 
+              : 'You successfully identified the NFT scam! Never transact on unverified websites.'
+            }
+            failureExplanation={language === 'chinese' ? '請檢查以下危險信號：' : 'Check the following danger signals:'}
+            successSubtitle={language === 'chinese' ? '恭喜完成任務' : 'Congratulations on completing the task'}
+            retryButtonText={language === 'chinese' ? '重試' : 'Retry'}
+            checkItems={isCorrect ? [
+              {
+                label: language === 'chinese' ? '詐騙識別' : 'Scam Detection',
+                value: language === 'chinese' ? '正確拒絕' : 'Correctly Rejected',
+                isCorrect: true,
+                showValue: true
+              },
+              {
+                label: language === 'chinese' ? '合約安全判斷' : 'Contract Security Assessment',
+                value: language === 'chinese' ? '識別未驗證合約' : 'Identified Unverified Contract',
+                isCorrect: true,
+                showValue: true
+              },
+              {
+                label: language === 'chinese' ? '網址識別' : 'URL Recognition',
+                value: language === 'chinese' ? '發現假冒網站' : 'Detected Fake Website',
+                isCorrect: true,
+                showValue: true
+              },
+              ...(signals.length > 0 ? [{
+                label: language === 'chinese' ? '安全知識' : 'Security Knowledge',
+                value: language === 'chinese' ? '了解詐騙手法' : 'Understanding Scam Techniques',
+                isCorrect: true,
+                showValue: true,
+                details: (
+                  <div className="mt-2 space-y-2">
+                    {education.description && (
+                      <p className="text-gray-300 text-sm mb-3">{education.description}</p>
+                    )}
+                    {signals.map((signal, index) => (
+                      <div key={index} className="text-sm text-gray-300 flex items-start gap-2">
+                        <span className="text-green-400">•</span>
+                        <span>{signal}</span>
+                      </div>
+                    ))}
+                  </div>
+                )
+              }] : [])
+            ] : [
+              ...signals.map((signal, index) => ({
+                label: `${language === 'chinese' ? '危險信號' : 'Danger Signal'} ${index + 1}`,
+                value: signal,
+                isCorrect: false,
+                showValue: false,
+                details: (
+                  <div className="text-sm text-gray-300">
+                    {signal}
+                  </div>
+                )
+              })),
+              ...(education.description ? [{
+                label: education.title || (language === 'chinese' ? '安全提示' : 'Security Tips'),
+                value: '',
+                isCorrect: false,
+                showValue: false,
+                details: (
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-300 mb-3">{education.description}</p>
+                    {education.tips?.map((tip, index) => (
+                      <div key={index} className="text-sm text-gray-300 flex items-start gap-2">
+                        <span className="text-yellow-400">•</span>
+                        <span>{tip}</span>
+                      </div>
+                    ))}
+                  </div>
+                )
+              }] : [])
+            ]}
+            onRetry={!isCorrect ? () => {
+              setShowResult(false);
+              setSelectedAnswer(null);
+              setIsCorrect(false);
+              setShowContract(false);
+              setShowNFTWebsite(false);
+              setShowLink(false);
+              setCurrentMessage(0);
+            } : null}
+          />
+        ) : showContract ? (
           <div className="h-full flex justify-center p-4" style={{ paddingTop: '120px' }}>
             {renderContractInterface()}
           </div>

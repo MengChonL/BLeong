@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import BrowserFrame from './BrowserFrame';
 import ChallengeTemplate from './ChallengeTemplate';
+import ChallengeResultScreen from './ChallengeResultScreen';
 import GoogleLogo from '../../assets/Google_logo.png';
 import Fox from '../../assets/MetaMask_Fox.png';
 import CoinbaseLogo from '../../assets/coinbase.png';
@@ -18,6 +19,9 @@ const GoogleSearchMetaMask = () => {
   const [connectPassword, setConnectPassword] = useState('');
   const [connectMnemonic, setConnectMnemonic] = useState('');
   const [showConnectQuestion, setShowConnectQuestion] = useState(true);
+  const [showResult, setShowResult] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(null);
   
   // 从配置文件获取数据
   const config = getChallengeConfig('level2-4');
@@ -44,22 +48,9 @@ const GoogleSearchMetaMask = () => {
     setView('walletCreated');
   };
   const handleClick = (type) => {
-    switch (type) {
-      case 'official':
-        alert('✅ 你選擇了官方網站！這是安全的做法。\n\n遊戲提示：接下來請從 metamask.io 下載擴充功能。');
-        break;
-      case 'ad':
-        alert('⚠️ 這是釣魚廣告！網址不是 metamask.io。\n\n真實案例：攻擊者常購買 Google 廣告誘騙用戶下載假錢包。');
-        break;
-      case 'discord':
-        alert('❌ 這是木馬安裝包！Discord 朋友可能已被盜號。\n\n切記：官方從不透過社群發送安裝檔。');
-        break;
-      case 'webtool':
-        alert('🚫 網頁錢包工具要求你輸入助記詞？這是釣魚！\n\n真正的錢包永遠不會讓你在瀏覽器中「創建並儲存」私鑰。');
-        break;
-      default:
-        alert('未知選項');
-    }
+    setSelectedOption(type);
+    setIsCorrect(type === 'official');
+    setShowResult(true);
   };
 
   const styles = `
@@ -371,18 +362,9 @@ const GoogleSearchMetaMask = () => {
     };
 
     const handleConfirmAnswer = (answer) => {
-      if (answer === 'yes') {
-        alert(language === 'chinese' 
-          ? '⚠️ 危險！你剛才在一個釣魚網站輸入了你的密碼和助記詞！\n\n真實案例：攻擊者會建立假的交易平台網站，誘騙用戶輸入錢包資訊，從而盜取資產。\n\n請記住：永遠不要在任何網站上輸入你的助記詞！' 
-          : '⚠️ Danger! You just entered your password and seed phrase on a phishing website!\n\nReal case: Attackers create fake trading platform websites to trick users into entering their wallet information and steal their assets.\n\nRemember: Never enter your seed phrase on any website!');
-        setView('walletCreated');
-      } else {
-        alert(language === 'chinese' 
-          ? '✅ 正確！你不應該在這個網站輸入助記詞！\n\n這是一個釣魚網站。真正的交易平台不會要求你輸入完整的助記詞。' 
-          : '✅ Correct! You should not enter your seed phrase on this website!\n\nThis is a phishing website. Real trading platforms never ask for your complete seed phrase.');
-        setView('coinbase');
-        setShowConnectQuestion(false);
-      }
+      setSelectedOption(answer === 'yes' ? 'phishing-yes' : 'phishing-no');
+      setIsCorrect(answer === 'no'); // 正确答案是"否"
+      setShowResult(true);
     };
 
     console.log('renderConnectWallet - showConnectQuestion:', showConnectQuestion);
@@ -682,6 +664,47 @@ const GoogleSearchMetaMask = () => {
     ? '你喜愛的KOL 小鯊魚 最近在推薦一個交易平台coinbase 你做了一下調查後決定先在MetaMask建立一個錢包 然之後再把錢包綁定在這個交易平台下 在Google搜尋的結果下按進了第一個coinbase的連結'
     : 'Your favorite KOL, Little Shark, recently recommended a trading platform called Coinbase. After doing some research, you decided to first create a wallet in MetaMask and then connect it to this trading platform. You clicked on the first Coinbase link in the Google search results.';
 
+  // 危险信号内容
+  const dangerSignals = {
+    ad: {
+      chinese: ['🚨 網址不是 metamask.io', '⚠️ Google 廣告可能被攻擊者購買', '❗ 釣魚網站仿冒官方界面'],
+      english: ['🚨 URL is not metamask.io', '⚠️ Google Ads can be purchased by attackers', '❗ Phishing sites mimic official interfaces']
+    },
+    discord: {
+      chinese: ['❌ 朋友帳號可能已被盜', '⚠️ 官方不會透過社群發送安裝檔', '🚨 安裝包可能含有木馬'],
+      english: ['❌ Friend\'s account may be compromised', '⚠️ Official sources never send installation files via social media', '🚨 Installation packages may contain trojans']
+    },
+    webtool: {
+      chinese: ['🚫 要求輸入助記詞是釣魚', '⚠️ 真正的錢包不會在瀏覽器中儲存私鑰', '🚨 立即洩露所有資產控制權'],
+      english: ['🚫 Requesting seed phrase is phishing', '⚠️ Real wallets never store private keys in browsers', '🚨 Immediately exposes all asset control']
+    },
+    'phishing-yes': {
+      chinese: ['🚨 在釣魚網站輸入了助記詞', '⚠️ 攻擊者建立假的交易平台', '❗ 資產立即被盜取的風險', '🔒 助記詞等於完全控制權'],
+      english: ['🚨 Entered seed phrase on phishing site', '⚠️ Attackers create fake trading platforms', '❗ Immediate risk of asset theft', '🔒 Seed phrase equals complete control']
+    },
+    'phishing-no': {
+      chinese: [],
+      english: []
+    }
+  };
+
+  const educationTips = {
+    chinese: [
+      '只從官方網站 metamask.io 下載',
+      '檢查網址是否完全正確',
+      '警惕 Google 廣告中的釣魚網站',
+      '永遠不要在任何網站輸入助記詞',
+      '官方不會透過社群發送安裝檔'
+    ],
+    english: [
+      'Only download from official website metamask.io',
+      'Check if the URL is completely correct',
+      'Beware of phishing sites in Google Ads',
+      'Never enter seed phrase on any website',
+      'Official sources never send installation files via social media'
+    ]
+  };
+
   return (
     <ChallengeTemplate 
       language={language}
@@ -691,27 +714,189 @@ const GoogleSearchMetaMask = () => {
       containerMaxWidth="75vw"
       containerMaxHeight="75vh"
     >
-      {/* 剧情描述框 - 在浏览器外面 */}
-      <div style={{ 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
-        padding: '20px 30px',
-        borderRadius: '12px',
-        marginBottom: '20px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-      }}>
-        <p style={{ 
-          color: '#ffffff', 
-          fontSize: '16px', 
-          lineHeight: '1.6',
-          margin: 0,
-          textAlign: 'center',
-          fontWeight: '500'
-        }}>
-          📱 {storyText}
-        </p>
-      </div>
-      
-      {renderView()}
+      {showResult ? (
+        // 显示结果界面
+        <ChallengeResultScreen
+          isSuccess={isCorrect}
+          title={language === 'chinese' ? 'Google 搜尋識別' : 'Google Search Recognition'}
+          description={language === 'chinese' 
+            ? '識別 Google 搜尋結果中的釣魚網站和官方網站' 
+            : 'Identify phishing sites and official websites in Google search results'
+          }
+          successMessage={language === 'chinese' 
+            ? (selectedOption === 'phishing-no' ? '正確！拒絕輸入助記詞' : '正確！選擇了官方網站')
+            : (selectedOption === 'phishing-no' ? 'Correct! Refused to Enter Seed Phrase' : 'Correct! Official Website Selected')
+          }
+          failureMessage={language === 'chinese' ? '錯誤！這是釣魚網站' : 'Wrong! This is a Phishing Site'}
+          successExplanation={language === 'chinese' 
+            ? (selectedOption === 'phishing-no' 
+                ? '你不應該在這個網站輸入助記詞！這是一個釣魚網站。真正的交易平台不會要求你輸入完整的助記詞。'
+                : '你選擇了官方網站 metamask.io！這是安全的做法。只從官方網站下載錢包應用。')
+            : (selectedOption === 'phishing-no'
+                ? 'You should not enter your seed phrase on this website! This is a phishing website. Real trading platforms never ask for your complete seed phrase.'
+                : 'You selected the official website metamask.io! This is the safe approach. Only download wallet apps from official websites.')
+          }
+          failureExplanation={language === 'chinese' ? '請注意以下危險信號：' : 'Pay attention to the following danger signals:'}
+          successSubtitle={language === 'chinese' ? '恭喜完成任務' : 'Congratulations on completing the task'}
+          retryButtonText={language === 'chinese' ? '重試' : 'Retry'}
+          checkItems={isCorrect ? [
+            ...(selectedOption === 'phishing-no' ? [
+              {
+                label: language === 'chinese' ? '安全意識' : 'Security Awareness',
+                value: language === 'chinese' ? '拒絕輸入助記詞' : 'Refused to Enter Seed Phrase',
+                isCorrect: true,
+                showValue: true
+              },
+              {
+                label: language === 'chinese' ? '釣魚識別' : 'Phishing Detection',
+                value: language === 'chinese' ? '識別假交易平台' : 'Identified Fake Platform',
+                isCorrect: true,
+                showValue: true
+              },
+              {
+                label: language === 'chinese' ? '資產保護' : 'Asset Protection',
+                value: language === 'chinese' ? '避免資產被盜' : 'Avoided Asset Theft',
+                isCorrect: true,
+                showValue: true
+              }
+            ] : [
+              {
+                label: language === 'chinese' ? '網站識別' : 'Website Recognition',
+                value: language === 'chinese' ? '官方網站' : 'Official Website',
+                isCorrect: true,
+                showValue: true
+              },
+              {
+                label: language === 'chinese' ? '網址驗證' : 'URL Verification',
+                value: 'metamask.io',
+                isCorrect: true,
+                showValue: true
+              },
+              {
+                label: language === 'chinese' ? '安全下載' : 'Safe Download',
+                value: language === 'chinese' ? '從官方來源' : 'From Official Source',
+                isCorrect: true,
+                showValue: true
+              }
+            ]),
+            {
+              label: language === 'chinese' ? '安全提示' : 'Security Tips',
+              value: '',
+              isCorrect: true,
+              showValue: false,
+              details: (
+                <div className="space-y-2">
+                  {educationTips[language].map((tip, index) => (
+                    <div key={index} className="text-sm text-gray-300 flex items-start gap-2">
+                      <span className="text-green-400">✓</span>
+                      <span>{tip}</span>
+                    </div>
+                  ))}
+                </div>
+              )
+            }
+          ] : [
+            {
+              label: language === 'chinese' ? '錯誤選擇' : 'Wrong Choice',
+              value: language === 'chinese' 
+                ? selectedOption === 'ad' ? '釣魚廣告' 
+                  : selectedOption === 'discord' ? 'Discord 木馬' 
+                  : selectedOption === 'webtool' ? '網頁釣魚工具'
+                  : selectedOption === 'phishing-yes' ? '在釣魚網站輸入助記詞'
+                  : ''
+                : selectedOption === 'ad' ? 'Phishing Ad' 
+                  : selectedOption === 'discord' ? 'Discord Trojan' 
+                  : selectedOption === 'webtool' ? 'Web Phishing Tool'
+                  : selectedOption === 'phishing-yes' ? 'Entered Seed Phrase on Phishing Site'
+                  : '',
+              isCorrect: false,
+              showValue: false,
+              details: (
+                <div className="text-sm text-gray-300">
+                  {selectedOption === 'ad' && (language === 'chinese' 
+                    ? '這是釣魚廣告！攻擊者購買 Google 廣告誘騙用戶下載假錢包。' 
+                    : 'This is a phishing ad! Attackers purchase Google ads to trick users into downloading fake wallets.')}
+                  {selectedOption === 'discord' && (language === 'chinese' 
+                    ? '這是木馬安裝包！Discord 朋友可能已被盜號。官方從不透過社群發送安裝檔。' 
+                    : 'This is a trojan installer! Your Discord friend may be compromised. Official sources never send installation files via social media.')}
+                  {selectedOption === 'webtool' && (language === 'chinese' 
+                    ? '網頁錢包工具要求你輸入助記詞？這是釣魚！真正的錢包永遠不會讓你在瀏覽器中創建並儲存私鑰。' 
+                    : 'Web wallet tool asking for your seed phrase? This is phishing! Real wallets never let you create and store private keys in browsers.')}
+                  {selectedOption === 'phishing-yes' && (language === 'chinese' 
+                    ? '⚠️ 危險！你剛才在一個釣魚網站輸入了你的密碼和助記詞！攻擊者會建立假的交易平台網站，誘騙用戶輸入錢包資訊，從而盜取資產。請記住：永遠不要在任何網站上輸入你的助記詞！' 
+                    : '⚠️ Danger! You just entered your password and seed phrase on a phishing website! Attackers create fake trading platform websites to trick users into entering their wallet information and steal their assets. Remember: Never enter your seed phrase on any website!')}
+                </div>
+              )
+            },
+            ...(selectedOption && dangerSignals[selectedOption] ? 
+              dangerSignals[selectedOption][language].map((signal, index) => ({
+                label: `${language === 'chinese' ? '危險信號' : 'Danger Signal'} ${index + 1}`,
+                value: signal,
+                isCorrect: false,
+                showValue: false,
+                details: (
+                  <div className="text-sm text-gray-300">
+                    {signal}
+                  </div>
+                )
+              })) : []
+            ),
+            {
+              label: language === 'chinese' ? '安全提示' : 'Security Tips',
+              value: '',
+              isCorrect: false,
+              showValue: false,
+              details: (
+                <div className="space-y-2">
+                  {educationTips[language].map((tip, index) => (
+                    <div key={index} className="text-sm text-gray-300 flex items-start gap-2">
+                      <span className="text-yellow-400">•</span>
+                      <span>{tip}</span>
+                    </div>
+                  ))}
+                </div>
+              )
+            }
+          ]}
+          onRetry={!isCorrect ? () => {
+            setShowResult(false);
+            setIsCorrect(false);
+            const previousOption = selectedOption;
+            setSelectedOption(null);
+            // 根据错误类型返回到不同的视图
+            if (previousOption === 'phishing-yes') {
+              setView('connectWallet');
+              setShowConnectQuestion(true);
+            } else {
+              setView('search');
+            }
+          } : null}
+        />
+      ) : (
+        <>
+          {/* 剧情描述框 - 在浏览器外面 */}
+          <div style={{ 
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+            padding: '20px 30px',
+            borderRadius: '12px',
+            marginBottom: '20px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          }}>
+            <p style={{ 
+              color: '#ffffff', 
+              fontSize: '16px', 
+              lineHeight: '1.6',
+              margin: 0,
+              textAlign: 'center',
+              fontWeight: '500'
+            }}>
+              📱 {storyText}
+            </p>
+          </div>
+          
+          {renderView()}
+        </>
+      )}
     </ChallengeTemplate>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import ChallengeTemplate from './ChallengeTemplate';
 import BrowserFrame from './BrowserFrame';
+import ChallengeResultScreen from './ChallengeResultScreen';
 // 导入图标
 import EthereumIcon from '../../assets/Ethereum.png';
 import USDTIcon from '../../assets/USDT.png';
@@ -225,6 +226,9 @@ const WalletTransferChallenge = ({ config }) => {
       warningText: 'Please verify network, asset, address, and amount carefully! Errors will result in permanent loss of assets.',
       selectNetwork: 'Select Network',
       selectAsset: 'Select Asset',
+      yourInput: 'Your Input',
+      shouldBe: 'Should Be',
+      selected: 'You Selected',
       correctAmount: 'Correct Amount',
       checkmark: '✓',
       crossmark: '✗',
@@ -266,74 +270,79 @@ const WalletTransferChallenge = ({ config }) => {
       <BrowserFrame url="metamask.io/transfer">
         <div
           style={{
-            backgroundColor: '#f5f5f5',
-            padding: '40px',
+            backgroundColor: showResult ? 'transparent' : '#f5f5f5',
+            padding: showResult ? '0' : '40px',
             color: '#1a1a1a',
             minHeight: '80vh',
           }}
         >
-        {/* 标题 */}
-        <h1 
-          className="text-4xl font-bold mb-6 text-center"
-          style={{ 
-            color: '#1a1a1a',
-            fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-          }}
-        >
-          {currentContent.title}
-        </h1>
+        {/* 标题和任务说明 - 只在非结果状态显示 */}
+        {!showResult && (
+          <>
+            {/* 标题 */}
+            <h1 
+              className="text-4xl font-bold mb-6 text-center"
+              style={{ 
+                color: '#1a1a1a',
+                fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+              }}
+            >
+              {currentContent.title}
+            </h1>
 
-        {/* 任务说明 */}
-        <div 
-          className="mb-12 p-10"
-          style={{
-            backgroundColor: '#f0f9ff',
-            border: '1px solid #ffffff',
-          }}
-        >
-          <div className="flex justify-between items-start">
-            <div className="flex-1">
-              <h3 className="text-xl font-bold mb-4" style={{ color: '#0284c7' }}>
-                {currentContent.scenario}
-              </h3>
-              <p className="text-lg leading-relaxed" style={{ color: '#1e40af' }}>
-                {currentContent.scenarioText}
-              </p>
-            </div>
-            
-            {/* 时间倒计时显示 */}
-            {config.timeLimit && (
-              <div 
-                className="ml-8 p-6"
-                style={{
-                  backgroundColor: timeRemaining <= 30 ? '#fee2e2' : '#dbeafe',
-                  border: `2px solid ${timeRemaining <= 30 ? '#ef4444' : '#3b82f6'}`,
-                  borderRadius: '12px',
-                  minWidth: '200px',
-                  textAlign: 'center',
-                }}
-              >
-                <div className="text-sm font-medium mb-2" style={{ color: timeRemaining <= 30 ? '#dc2626' : '#1e40af' }}>
-                  {currentContent.timeRemaining || (language === 'chinese' ? '剩餘時間' : 'Time Remaining')}
+            {/* 任务说明 */}
+            <div 
+              className="mb-12 p-10"
+              style={{
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #ffffff',
+              }}
+            >
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-4" style={{ color: '#0284c7' }}>
+                    {currentContent.scenario}
+                  </h3>
+                  <p className="text-lg leading-relaxed" style={{ color: '#1e40af' }}>
+                    {currentContent.scenarioText}
+                  </p>
                 </div>
-                <div 
-                  className="text-4xl font-bold"
-                  style={{ 
-                    color: timeRemaining <= 30 ? '#dc2626' : '#1e40af',
-                    fontFamily: 'monospace',
-                  }}
-                >
-                  {formatTime(timeRemaining)}
-                </div>
-                {timeRemaining <= 30 && (
-                  <div className="text-xs mt-2" style={{ color: '#dc2626' }}>
-                    ⚠️ {language === 'chinese' ? '時間不多了！' : 'Hurry up!'}
+                
+                {/* 时间倒计时显示 */}
+                {config.timeLimit && (
+                  <div 
+                    className="ml-8 p-6"
+                    style={{
+                      backgroundColor: timeRemaining <= 30 ? '#fee2e2' : '#dbeafe',
+                      border: `2px solid ${timeRemaining <= 30 ? '#ef4444' : '#3b82f6'}`,
+                      borderRadius: '12px',
+                      minWidth: '200px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <div className="text-sm font-medium mb-2" style={{ color: timeRemaining <= 30 ? '#dc2626' : '#1e40af' }}>
+                      {currentContent.timeRemaining || (language === 'chinese' ? '剩餘時間' : 'Time Remaining')}
+                    </div>
+                    <div 
+                      className="text-4xl font-bold"
+                      style={{ 
+                        color: timeRemaining <= 30 ? '#dc2626' : '#1e40af',
+                        fontFamily: 'monospace',
+                      }}
+                    >
+                      {formatTime(timeRemaining)}
+                    </div>
+                    {timeRemaining <= 30 && (
+                      <div className="text-xs mt-2" style={{ color: '#dc2626' }}>
+                        ⚠️ {language === 'chinese' ? '時間不多了！' : 'Hurry up!'}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+          </>
+        )}
 
         {/* MetaMask 风格的转账界面 */}
         {!showResult && (
@@ -1077,269 +1086,121 @@ const WalletTransferChallenge = ({ config }) => {
 
         {/* 结果显示 */}
         {showResult && (
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="text-center"
-          >
-            <div 
-              className="p-14 mb-12"
-              style={{
-                backgroundColor: isCorrect ? '#10b981' : '#ef4444',
-                border: 'none',
-                boxShadow: 'none'
-              }}
-            >
-              <div className="text-7xl mb-8">
-                {isCorrect ? common.checkmark : common.crossmark}
-              </div>
-              <p 
-                className="text-4xl font-bold text-white mb-8"
-                style={{ 
-                  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                }}
-              >
-                {isCorrect ? common.correct : common.incorrect}
-              </p>
-              <p 
-                className="text-xl"
-                style={{ 
-                  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                  lineHeight: '1.6',
-                  color: '#ffffff'
-                }}
-              >
-                {isCorrect 
-                  ? common.correctExplanation 
-                  : isTimedOut 
-                    ? (language === 'chinese' 
-                      ? '時間已到！你未能在限定時間內完成轉帳。請在下次挑戰中更快地完成操作。' 
-                      : 'Time is up! You did not complete the transfer within the time limit. Please try to complete faster next time.')
-                    : common.incorrectExplanation}
-              </p>
-            </div>
-
-            {/* 错误详情 - 像素风格设计 */}
-            {!isCorrect && !isTimedOut && (
-              <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg overflow-hidden border-2 border-yellow-400 shadow-[0_0_10px_rgba(255,255,255,0.1)] pixel-font text-white">
-                {/* Error Banner */}
-                <div className="bg-red-700 text-white py-4 px-4 flex items-center justify-center gap-3">
-                  <div className="w-8 h-8 flex items-center justify-center">
-                    <span className="text-2xl">❌</span>
-                  </div>
-                  <div className="text-center">
-                    <h2 className="text-xl md:text-2xl font-bold">轉帳失敗！</h2>
-                    <p className="text-xs md:text-sm opacity-90">請檢查以下項目：</p>
-                  </div>
-                </div>
-
-                {/* Error Details */}
-                <div className="p-4 space-y-3">
-                  {/* 网络检查 */}
-                  {config.transfer.requireNetworkSelection && (
-                    <div className={`flex items-start justify-between p-3 rounded border ${
-                      selectedNetwork === config.transfer.correctNetwork 
-                        ? 'bg-green-900 border-green-500' 
-                        : 'bg-red-900 border-red-500'
-                    }`}>
-                      <div>
-                        <h3 className={`font-bold ${
-                          selectedNetwork === config.transfer.correctNetwork 
-                            ? 'text-green-300' 
-                            : 'text-red-300'
-                        }`}>
-                          {currentContent.networkLabel}
-                        </h3>
-                        <div className="mt-1 text-xs text-gray-300">
-                          <span>你選擇的: <span className={
-                            selectedNetwork === config.transfer.correctNetwork 
-                              ? 'text-green-400' 
-                              : 'text-red-400'
-                          }>{config.networks.find(n => n.id === selectedNetwork)?.name}</span></span>
-                          {selectedNetwork !== config.transfer.correctNetwork && (
-                            <>
-                              <br />
-                              <span>應該選擇: <span className="text-green-400">{config.networks.find(n => n.id === config.transfer.correctNetwork)?.name}</span></span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      <div className="w-6 h-6 flex items-center justify-center">
-                        <span className={
-                          selectedNetwork === config.transfer.correctNetwork 
-                            ? 'text-green-400' 
-                            : 'text-red-400'
-                        }>
-                          {selectedNetwork === config.transfer.correctNetwork ? '✅' : '❌'}
-                        </span>
-                      </div>
+          <ChallengeResultScreen
+            isSuccess={isCorrect}
+            title={currentContent.scenario}
+            description={currentContent.scenarioText}
+            successMessage={common.correct}
+            failureMessage={common.incorrect}
+            successExplanation={common.correctExplanation}
+            failureExplanation={common.incorrectExplanation}
+            successSubtitle={language === 'chinese' ? '恭喜完成任務' : 'Congratulations on completing the task'}
+            retryButtonText={common.retryButton}
+            checkItems={[
+              // 网络检查
+              ...(config.transfer.requireNetworkSelection ? [{
+                label: currentContent.networkLabel || '網絡',
+                value: config.networks.find(n => n.id === selectedNetwork)?.name,
+                isCorrect: selectedNetwork === config.transfer.correctNetwork,
+                showValue: isCorrect,
+                details: selectedNetwork !== config.transfer.correctNetwork ? (
+                  <div>
+                    <div className="mb-1">
+                      <span className="text-gray-400">{common.selected}: </span>
+                      <span className="font-bold text-red-400">
+                        {config.networks.find(n => n.id === selectedNetwork)?.name}
+                      </span>
                     </div>
-                  )}
-
-                  {/* 资产检查 */}
-                  {config.transfer.requireAssetSelection && (
-                    <div className={`flex items-start justify-between p-3 rounded border ${
-                      selectedAsset === config.transfer.correctAsset 
-                        ? 'bg-green-900 border-green-500' 
-                        : 'bg-red-900 border-red-500'
-                    }`}>
-                      <div>
-                        <h3 className={`font-bold ${
-                          selectedAsset === config.transfer.correctAsset 
-                            ? 'text-green-300' 
-                            : 'text-red-300'
-                        }`}>
-                          {currentContent.assetLabel}
-                        </h3>
-                        <div className="mt-1 text-xs text-gray-300">
-                          <span>你選擇的: <span className={
-                            selectedAsset === config.transfer.correctAsset 
-                              ? 'text-green-400' 
-                              : 'text-red-400'
-                          }>{config.assets.find(a => a.id === selectedAsset)?.symbol}</span></span>
-                          {selectedAsset !== config.transfer.correctAsset && (
-                            <>
-                              <br />
-                              <span>應該選擇: <span className="text-green-400">{config.assets.find(a => a.id === config.transfer.correctAsset)?.symbol}</span></span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      <div className="w-6 h-6 flex items-center justify-center">
-                        <span className={
-                          selectedAsset === config.transfer.correctAsset 
-                            ? 'text-green-400' 
-                            : 'text-red-400'
-                        }>
-                          {selectedAsset === config.transfer.correctAsset ? '✅' : '❌'}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 地址检查 */}
-                  <div className={`flex items-start justify-between p-3 rounded border ${
-                    addressInput.trim().toLowerCase() === config.addresses.correct.toLowerCase() 
-                      ? 'bg-green-900 border-green-500' 
-                      : 'bg-red-900 border-red-500'
-                  }`}>
                     <div>
-                      <h3 className={`font-bold ${
-                        addressInput.trim().toLowerCase() === config.addresses.correct.toLowerCase() 
-                          ? 'text-green-300' 
-                          : 'text-red-300'
-                      }`}>
-                        收款地址
-                      </h3>
-                      <div className="mt-1 text-xs text-gray-300">
-                        <span>你輸入的:</span>
-                        <div className="mt-1 text-xs bg-gray-700 p-1 rounded break-all">
-                          {addressInput || '未輸入'}
-                        </div>
-                        {addressInput.trim().toLowerCase() !== config.addresses.correct.toLowerCase() && (
-                          <div className="mt-2">
-                            <span>應該輸入: <span className="text-green-400">{config.addresses.correct}</span></span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      <span className={
-                        addressInput.trim().toLowerCase() === config.addresses.correct.toLowerCase() 
-                          ? 'text-green-400' 
-                          : 'text-red-400'
-                      }>
-                        {addressInput.trim().toLowerCase() === config.addresses.correct.toLowerCase() ? '✅' : '❌'}
+                      <span className="text-gray-400">{common.shouldBe}: </span>
+                      <span className="text-green-400 font-bold">
+                        {config.networks.find(n => n.id === config.transfer.correctNetwork)?.name}
                       </span>
                     </div>
                   </div>
-
-                  {/* 金额检查 */}
-                  <div className={`flex items-start justify-between p-3 rounded border ${
-                    amountInput === config.transfer.amount 
-                      ? 'bg-green-900 border-green-500' 
-                      : 'bg-red-900 border-red-500'
-                  }`}>
-                    <div>
-                      <h3 className={`font-bold ${
-                        amountInput === config.transfer.amount 
-                          ? 'text-green-300' 
-                          : 'text-red-300'
-                      }`}>
-                        轉帳金額
-                      </h3>
-                      <div className="mt-1 text-xs text-gray-300">
-                        <span>你輸入的: <span className={
-                          amountInput === config.transfer.amount 
-                            ? 'text-green-400' 
-                            : 'text-red-400'
-                        }>{amountInput || '未輸入'} {config.transfer.currency}</span></span>
-                        {amountInput !== config.transfer.amount && (
-                          <>
-                            <br />
-                            <span>應該輸入: <span className="text-green-400">{config.transfer.amount} {config.transfer.currency}</span></span>
-                          </>
-                        )}
-                      </div>
+                ) : null
+              }] : []),
+              // 资产检查
+              ...(config.transfer.requireAssetSelection ? [{
+                label: currentContent.assetLabel || '幣種',
+                value: config.assets.find(a => a.id === selectedAsset)?.symbol,
+                isCorrect: selectedAsset === config.transfer.correctAsset,
+                showValue: isCorrect,
+                details: selectedAsset !== config.transfer.correctAsset ? (
+                  <div>
+                    <div className="mb-1">
+                      <span className="text-gray-400">{common.selected}: </span>
+                      <span className="font-bold text-red-400">
+                        {config.assets.find(a => a.id === selectedAsset)?.symbol}
+                      </span>
                     </div>
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      <span className={
-                        amountInput === config.transfer.amount 
-                          ? 'text-green-400' 
-                          : 'text-red-400'
-                      }>
-                        {amountInput === config.transfer.amount ? '✅' : '❌'}
+                    <div>
+                      <span className="text-gray-400">{common.shouldBe}: </span>
+                      <span className="text-green-400 font-bold">
+                        {config.assets.find(a => a.id === config.transfer.correctAsset)?.symbol}
                       </span>
                     </div>
                   </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="px-4 pb-4 flex justify-center gap-3">
-                  <button 
-                    onClick={() => {
-                      setShowResult(false);
-                      setAddressInput('');
-                      setAmountInput('');
-                      setSelectedNetwork(config?.wallet?.defaultNetwork || 'ethereum');
-                      setSelectedAsset(config?.wallet?.defaultAsset || 'eth');
-                      setErrorMessage('');
-                      setIsTimedOut(false);
-                      setTimeRemaining(config?.timeLimit || null);
-                    }}
-                    className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold text-sm rounded border border-orange-400 shadow-[0_0_5px_rgba(255,165,0,0.5)] transition"
-                  >
-                    重試
-                  </button>
-                  <button 
-                    onClick={() => window.history.back()}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold text-sm rounded border border-green-400 shadow-[0_0_5px_rgba(0,255,0,0.5)] transition"
-                  >
-                    繼續
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* 成功时的按钮 */}
-            {isCorrect && (
-              <div className="flex gap-10 justify-center">
-                <motion.button
-                  onClick={() => window.history.back()}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-16 py-8 text-xl font-bold text-white"
-                  style={{
-                    backgroundColor: '#10b981',
-                    border: 'none',
-                    boxShadow: 'none',
-                  }}
-                >
-                  {common.continueButton}
-                </motion.button>
-              </div>
-            )}
-          </motion.div>
+                ) : null
+              }] : []),
+              // 地址检查
+              {
+                label: common.addressLabel || '收款地址',
+                value: `${config.addresses.correct.slice(0, 10)}...${config.addresses.correct.slice(-8)}`,
+                isCorrect: addressInput.trim().toLowerCase() === config.addresses.correct.toLowerCase(),
+                showValue: isCorrect,
+                details: addressInput.trim().toLowerCase() !== config.addresses.correct.toLowerCase() ? (
+                  <div>
+                    <div className="mb-2">
+                      <span className="text-gray-400">{common.yourInput}:</span>
+                      <div className="mt-1 text-xs bg-gray-800/50 p-2 rounded border border-gray-700 break-all font-mono">
+                        {addressInput || '(空)'}
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">{common.shouldBe}: </span>
+                      <div className="mt-1 text-xs bg-gray-800/50 p-2 rounded border border-green-700 break-all font-mono text-green-400">
+                        {config.addresses.correct}
+                      </div>
+                    </div>
+                  </div>
+                ) : null
+              },
+              // 金额检查
+              {
+                label: common.amountLabel || '轉帳金額',
+                value: `${config.transfer.amount} ${config.transfer.currency}`,
+                isCorrect: amountInput === config.transfer.amount,
+                showValue: isCorrect,
+                details: amountInput !== config.transfer.amount ? (
+                  <div>
+                    <div className="mb-1">
+                      <span className="text-gray-400">{common.yourInput}: </span>
+                      <span className="font-bold text-red-400">
+                        {amountInput || '(空)'} {config.transfer.currency}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400">{common.shouldBe}: </span>
+                      <span className="text-green-400 font-bold">
+                        {config.transfer.amount} {config.transfer.currency}
+                      </span>
+                    </div>
+                  </div>
+                ) : null
+              }
+            ]}
+            onRetry={() => {
+              setShowResult(false);
+              setAddressInput('');
+              setAmountInput('');
+              setSelectedNetwork(config?.wallet?.defaultNetwork || 'ethereum');
+              setSelectedAsset(config?.wallet?.defaultAsset || 'eth');
+              setErrorMessage('');
+              setIsTimedOut(false);
+              setTimeRemaining(config?.timeLimit || null);
+            }}
+          />
         )}
         </div>
       </BrowserFrame>
